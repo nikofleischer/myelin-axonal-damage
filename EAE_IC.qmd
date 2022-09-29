@@ -284,7 +284,7 @@ Plotting Cd3g, Cd3d (CD3) and Trbc1, Trbc2 (TCR) shows that clusters 7,6,12 are 
 wrap_plots(FeaturePlot(sc.norm, features = c('Cd3g','Cd3d','Trbc1', 'Trbc2'))&NoAxes())+clPlot #find other markers for subtypes as Cd4/8 are not well captures in RNA
 
 #T cell subtypes can not be easily resolved by the clustering of transcriptome data 
-wrap_plots(FeaturePlot(sc.norm, features = c('Cd4','Cd8a'),ncol = 1)&NoAxes())+clPlot #find other markers for subtypes as Cd4/8 are not well captures in RNA
+wrap_plots(FeaturePlot(sc.norm, features = c('Cd4','Cd8a'),ncol = 1)&NoAxes())+clPlot 
 
 #NK cd3-, klrk1+ klrb1+ Ncr1+ 
 wrap_plots(FeaturePlot(sc.norm,features = c('Klrk1','Klrb1','Ncr1','Cd3d'))&NoAxes())+clPlot
@@ -326,7 +326,7 @@ wrap_plots(FeaturePlot(sc.norm, features = c('S100a8','Ngp','Retnlg'))&NoAxes()&
 
 ## Identifying remaining clusters
 
-Clusters 16, 11 and 17 still remain unclear. Checking by calculating unqiue clustermarkers:
+Clusters 16, 11 and 17 still remain unclear. Checking by calculating unique cluster markers:
 
 ```{r}
 FindMarkers(sc.norm, group.by = 'seurat_clusters',ident.1 = 17, logfc.threshold = 2, min.diff.pct = 0.7, only.pos = TRUE)
@@ -453,10 +453,23 @@ scCC.noDblRE = scCC.noDbl %>%
                 FindNeighbors(dims =  1:30) %>% 
                 FindClusters(resolution = 1.1) %>% 
                 BuildClusterTree()
+
+```
+
+```{r}
+#cluster 17 still looks like duplets, as it expresses both T-Cell and MG Markers and has a higher Feature Count the the rest of the dataset 
+scCC.noDblRE %>% DimPlot_scCustom(label = TRUE, group.by = 'seurat_clusters') /
+scCC.noDblRE %>% FeaturePlot(.,c('Cd3g','C4b','nFeature_RNA'))
+```
+
+```{r}
+#cluster 19 is Ptgds+ Oligodendrocytes, cluster 20 is Cldn5+ Endothelial cells 
+scCC.noDblRE %>% DimPlot_scCustom(label = TRUE, group.by = 'seurat_clusters') /
+scCC.noDblRE %>% FeaturePlot(.,c('Ptgds','Cldn5'))
 ```
 
 ```{r,fig.asp = 0.5}
-scCC.noDblRE.clean  = scCC.noDblRE[,scCC.noDblRE$seurat_clusters %!in% c(19,20)]
+scCC.noDblRE.clean  = scCC.noDblRE[,scCC.noDblRE$seurat_clusters %!in% c(17,19,20)]
 #scCC.noDblRE.clean %>% colnames %>% 
 #                       as.data.frame() %>% 
 #                       write_csv(file = 'scCC.noDblRE.clean_barcodes.csv')
@@ -511,7 +524,7 @@ scCC.noDblRE.clean %>% DimPlot_scCustom(group.by = 'celltypesNew',label = TRUE)
 
 # Figures
 
-The following blocks generate the figures as found in the paper. If you want to skip the preprocessing steps, you can load the final object here
+The following blocks generate the figures as found in the paper. If you want to skip the pre processing steps, you can access the final object from Geo and load it here
 
 ```{r}
 #scCC.noDblRE.clean = LoadH5Seurat('./RObjects/scCC.noDblRE.clean.h5seurat')
@@ -539,10 +552,8 @@ sc.mg = scCC.noDblRE.clean %>% subset(celltypesNew %in% c("Microglia"))
 #define markers
 #CD25 = Il2ra, CD69, CD71 = Tfrc,HLA-DR,Cd137 = Tnfrsf9, CD107a = Lamp1, 
 tActMarker = c('Il12a','Ifng','Spp1','Il17a','Cd44','Cd69','Ccl2')
-length(tActMarker) #7
 
 mgActMarker = c('Hexb','Tmem119','P2ry12','Axl','Cybb','Cd68','H2-Aa','Cd74','Cd86','Trem2','Tyrobp','Apoe','Itgax','Lgals3')
-length(mgActMarker) #15
 
 cytokines = c('Ccl5','Ccl6','Cxcl10','Il6','Csf2','Tnf')
 
@@ -555,8 +566,20 @@ macGenes = c(macHomGenes,macActGenes)
 
 ```{r}
 #Microglia 
-dfMgWt = FetchData(sc.mg,vars = mgActMarker, slot = 'data',cells = colnames(sc.mg)[sc.mg$sample =='EAE_IC_WT']) %>% gather() %>% mutate(genotype = 'WT')
-dfMgHmbp = FetchData(sc.mg,vars = mgActMarker, slot = 'data',cells = colnames(sc.mg)[sc.mg$sample =='EAE_IC_HMBP']) %>% gather() %>% mutate(genotype = 'hMBP')
+dfMgWt = FetchData(sc.mg,
+                   vars = mgActMarker, 
+                   slot = 'data',
+                   cells = colnames(sc.mg)[sc.mg$sample =='EAE_IC_WT']) %>% 
+        gather() %>% 
+        mutate(genotype = 'WT')
+
+dfMgHmbp = FetchData(sc.mg,
+                     vars = mgActMarker, 
+                     slot = 'data',
+                     cells = colnames(sc.mg)[sc.mg$sample =='EAE_IC_HMBP']) %>%
+           gather() %>% 
+           mutate(genotype = 'hMBP')
+
 dfMg = rbind(dfMgWt,dfMgHmbp)
 
 mgPlot = ggplot(dfMg, aes(x = factor(key,level = mgActMarker), 
@@ -584,11 +607,25 @@ mgPlot = ggplot(dfMg, aes(x = factor(key,level = mgActMarker),
 
 ```{r}
 #T-Cells
-dfTWt = FetchData(sc.t,vars = tActMarker, slot = 'data',cells = colnames(sc.t)[sc.t$sample =='EAE_IC_WT']) %>% gather() %>% mutate(genotype = 'WT')
-dfTHmbp = FetchData(sc.t,vars = tActMarker, slot = 'data',cells = colnames(sc.t)[sc.t$sample =='EAE_IC_HMBP']) %>% gather() %>% mutate(genotype = 'hMBP')
+dfTWt = FetchData(sc.t,
+                  vars = tActMarker, 
+                  slot = 'data',
+                  cells = colnames(sc.t)[sc.t$sample =='EAE_IC_WT']) %>% gather() %>% mutate(genotype = 'WT')
+
+dfTHmbp = FetchData(sc.t,
+                    vars = tActMarker, 
+                    slot = 'data',
+                    cells = colnames(sc.t)[sc.t$sample =='EAE_IC_HMBP']) %>% 
+          gather() %>% 
+          mutate(genotype = 'hMBP')
+
 dfT = rbind(dfTWt,dfTHmbp)
 
-tPlot = ggplot(dfT, aes(x = factor(key,level = tActMarker), y = value,fill = factor(genotype,levels = c('WT','hMBP')))) + 
+tPlot = ggplot(dfT, 
+               aes(x = factor(key,level = tActMarker), 
+                   y = value,
+                   fill = factor(genotype,
+                                 levels = c('WT','hMBP')))) + 
               geom_split_violin(scale = 'width') + 
                 geom_jitter(position = position_jitterdodge(
                                           jitter.width = jWidth, 
@@ -613,19 +650,26 @@ tPlot = ggplot(dfT, aes(x = factor(key,level = tActMarker), y = value,fill = fac
 ## Cytokines
 
 ```{r}
-dfCkWt = FetchData(scCC.noDblRE.clean,vars = cytokines, 
+dfCkWt = FetchData(scCC.noDblRE.clean,
+                   vars = cytokines, 
                    slot = 'data',
-                   cells = colnames(scCC.noDblRE.clean)[scCC.noDblRE.clean$sample =='EAE_IC_WT']) %>% gather() %>% mutate(genotype = 'WT')
+                   cells = colnames(scCC.noDblRE.clean)[scCC.noDblRE.clean$sample =='EAE_IC_WT']) %>% 
+        gather() %>% 
+        mutate(genotype = 'WT')
 
-dfCkHmbp = FetchData(scCC.noDblRE.clean,vars = cytokines, 
+dfCkHmbp = FetchData(scCC.noDblRE.clean,
+                     vars = cytokines, 
                      slot = 'data',
-                     cells = colnames(scCC.noDblRE.clean)[scCC.noDblRE.clean$sample =='EAE_IC_HMBP']) %>% gather() %>% mutate(genotype = 'hMBP')
+                     cells = colnames(scCC.noDblRE.clean)[scCC.noDblRE.clean$sample =='EAE_IC_HMBP']) %>% 
+          gather() %>% 
+          mutate(genotype = 'hMBP')
 
 dfCk = rbind(dfCkWt,dfCkHmbp)
 
 ckPlot = ggplot(dfCk, aes(x = factor(key,level = cytokines), 
                           y = value,
-                          fill = factor(genotype,levels = c('WT','hMBP')))) +
+                          fill = factor(genotype,
+                                        levels = c('WT','hMBP')))) +
                 geom_split_violin(scale = 'width') + 
                 geom_jitter(position = position_jitterdodge(
                                           jitter.width = jWidth, 
@@ -633,7 +677,8 @@ ckPlot = ggplot(dfCk, aes(x = factor(key,level = cytokines),
                             size = pSize,
                             alpha = pAlpha,
                             stroke = 0,
-                            aes(color = factor(genotype,levels = c('WT','hMBP')))) + 
+                            aes(color = factor(genotype,
+                                               levels = c('WT','hMBP')))) + 
                 scale_fill_discrete('Genotype',type = cols) + 
                 scale_color_discrete('Genotype',type = colsDots) + 
                 ylim(0,7) +
@@ -652,13 +697,19 @@ ckPlot = ggplot(dfCk, aes(x = factor(key,level = cytokines),
 ## Macrophages
 
 ```{r}
-dfMacWt = FetchData(sc.mac,vars = macGenes, 
+dfMacWt = FetchData(sc.mac,
+                    vars = macGenes, 
                     slot = 'data',
-                    cells = colnames(sc.mac)[sc.mac$sample =='EAE_IC_WT']) %>% gather() %>% mutate(genotype = 'WT')
+                    cells = colnames(sc.mac)[sc.mac$sample =='EAE_IC_WT']) %>% 
+          gather() %>% 
+          mutate(genotype = 'WT')
 
-dfMacHmbp = FetchData(sc.mac,vars = macGenes, 
+dfMacHmbp = FetchData(sc.mac,
+                      vars = macGenes, 
                       slot = 'data',
-                      cells = colnames(sc.mac)[sc.mac$sample =='EAE_IC_HMBP']) %>% gather() %>% mutate(genotype = 'hMBP')
+                      cells = colnames(sc.mac)[sc.mac$sample =='EAE_IC_HMBP']) %>%
+            gather() %>% 
+            mutate(genotype = 'hMBP')
 
 dfMac = rbind(dfMacWt,dfMacHmbp)
 
