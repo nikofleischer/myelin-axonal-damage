@@ -5,3 +5,4 @@
 renv/
 *.h5seurat
 *.rds
+*.h5
