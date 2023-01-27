@@ -1,115 +1,727 @@
 ---
-title: "PublishedData"
-format: html
-editor: visual
+title: "Myelin insulation as a risk factor for axonal degeneration in autoimmune demyelinating disease. Reanalysis of scRNAseq of myelinating oligodendrocytes in EAE"
+format: 
+  html:
+    toc: true
+    code-fold: true
 ---
 
-## Load Packages
+# OLG reanalysis
 
-All package versions are recorded in a `renv` environment that is saved in the `renv.lock` . You can `install.packages('renv')` the and then automatically install a local copy of each dependency into the project folder using `renv::activate()`
+This script contains reanalysis of external OLG scRNA-seq data (EAE vs WT)
+
+-   mouse: Falcao et al 2018, Meijer et al 2022
+
+## Initialization
+
+### Environment preparation
+
+```{r, include=FALSE}
+#| echo: false
+#attach renv
+#library(renv)
+
+#initiate renv
+#renv::init()
+```
+
+### Document setup
 
 ```{r}
-library(tidyverse)
-library(ggtext)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(error = FALSE)
+```
+
+### Install and attach required packages
+
+```{r}
+#| output: false
+
+#scRNA-seq analysis
 library(Seurat)
 library(Signac)
-library(devtools)
+library(SeuratDisk)
+library(SingleCellExperiment)
+library(dittoSeq)
+library(sctransform)
+library(scran)
+library(scater)
+library(scuttle)
+library(gprofiler2)
+library('org.Mm.eg.db')
+library('org.Hs.eg.db')
+library(scCustomize)
+
+#DEG analysis
+library(DESeq2)
+
+#data wrangling
+library(tidyverse)
+library(textshape)
+library(curl)
+library(GEOquery)
+library(purrr)
+library(PCAtools)
+
+
+#visualization
+library(ggrepel)
+library(cowplot)
+library(ggVennDiagram)
+library(pheatmap)
+library(ComplexHeatmap)
+library(simplifyEnrichment)
+library(viridis)
+library(RColorBrewer)
+library(circlize)
+library(scales)
+library(gridtext)
+library(ggtext)
+library(facefuns)
+
 ```
 
-## Load Data
+### Define input and output directories
 
--   10X Multiome dataset published in [Meijer et al. 2022. Neuron](https://doi.org/10.1016/j.neuron.2021.12.034)
+```{r}
+#| output: false
+wd = getwd()
 
-    -   EAE was induced using rMOG + CFA + PTX in Sox10:Cre-RCE:LoxP(EGFP)
+indir = paste0(wd,'/scRNAdata/OL/')
+dir.create(indir,recursive = TRUE)
 
-    -   Animals and cells were harvested at disease-peak (CS:3) (n = 2)
+outdir = paste0(wd,'/Output/OL/')
+dir.create(outdir,recursive = TRUE)
 
-    -   Cells where FACS sorted and single nuclei isolated
-
-    -   ATAC and RNA Multiome seq was performed using 10x Genomics ATAC + Gene Expression v1 Chemistry with n = 2 ind. replicates
-
--   Processed R Object was acquired from GEO Series [**GSE193238**](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE193238)
-
--   Oligodendrocytes were subset from full dataset by using author-provided cell type labels
-
-    -   including 2812 Ctrl
-
-    -   and 1533 EAE cells
-
-```{r LoadDataset}
-meijer2022 = readRDS(file = './RObjects/GSE193238_EAE_CtrlPeak_multiomics_GEO.rds')
-meijer2022.ol = meijer2022[,grepl('MOL',meijer2022$Final_celltypes)]
-DefaultAssay(meijer2022.ol) = 'RNA'
-meijer2022.ol@meta.data  = meijer2022.ol@meta.data %>% 
-  mutate(stim = case_when(sample == 'Ctr' ~ 'noEAE',
-                          sample == 'EAE_peak' ~ 'EAE'))
+figdir = paste0(wd,'/figures/OL/')
+dir.create(figdir,recursive = TRUE)
 ```
 
-### Slc16a1/MCT1 gene expression
+## Data download
 
-Gene expression of Slc16a1 was extracted for each sample and Violin plots generated using ggplot2.
+### Download data for Meijer et al. 2022
 
-```{r ggSetup}
-#setup
-jWidth = 0.2 #jitter width
-dWidth = 0.9 #separation overlaying geom_points in split violin 
-pSize = 0.5 #pointsize
-lwd = 0.2 #linewidth violin 
-pAlpha = 0.5 #opacity of points
-colsCas = c('noEAE' = "#D4D4D4", 'EAE' = 'plum2')
+```{r}
+gse_meijer = 'GSE193238'
+if(!file.exists(paste0(indir,gse_meijer,'/GSE193238_EAE_CtrlPeak_multiomics_GEO.rds'))){
+  supp_meijer <- getGEOSuppFiles(gse_meijer,
+                               baseDir = indir,
+                               makeDirectory = TRUE,
+                               filter_regex = '.rds')
+}
+meijer = readRDS(paste0(indir,gse_meijer,'/GSE193238_EAE_CtrlPeak_multiomics_GEO.rds'))
+meijer$condition = meijer$sample %>% as.factor %>% recode(Ctr = 'no EAE',EAE_peak = 'EAE')
+#the file compression seems to be corruputed. it's possible you need to download the file by hand and exctract it manually. The correct file size should be 3.2 GB
+```
+
+### Download data for Falcao et al. 2018
+
+```{r}
+gse_falcao = 'GSE113973'
+#the geo record contains individual count matrices for each plate 
+supp_falcao = paste0(indir,gse_falcao,'/',dir(paste0(indir,gse_falcao)))
+if(length(supp_falcao) == 1) {
+supp_falcao <- getGEOSuppFiles(gse_falcao,
+                               baseDir = indir,
+                               makeDirectory = TRUE,
+                               filter_regex = 'counts.tab.gz',
+                               fetch_files = TRUE) %>% 
+                rownames}
+falcao_exp = lapply(supp_falcao,function(x) {
+  exp = read_tsv(x)
+  genes = make.unique(exp$gene)
+  mat = as.matrix(exp[-1])
+  rownames(mat) = genes
+  return = mat  })
+
+#the annotation data is not contained in the GEO record but can only be retrieved from the UCSC cell browser entry of the dataset
+# Download annotation
+falcao_meta = paste0(outdir,'falcao_annotation.rds')
+if(!file.exists(paste0(outdir,'falcao_annotation.rds'))) {
+      falcao_meta = curl_download(url = 'https://cells.ucsc.edu/oligo-lineage-ms/Annotation.rds',
+                                  destfile = paste0(outdir,'falcao_annotation.rds'))}
+falcao_meta = readRDS(paste0(outdir,'falcao_annotation.rds'))
+
+# split annotation 
+falcao_meta = split(falcao_meta, falcao_meta$Plate)
+
+#clean up rownames
+falcao_meta = lapply(falcao_meta,function(x) {
+                     tmp = x
+                     rownames(tmp) = gsub('counts_...\\.tab\\.','',rownames(tmp))
+                     return = tmp})
+#name expression matrices 
+names(falcao_exp) = names(falcao_meta)
+
+#subset expression matrices to only include annotated cells
+falcao_exp_filt = purrr::imap(falcao_exp,function(x,y){
+  x[,rownames(falcao_meta[[y]])]
+})
+
+#create seurat objects from annotation and expression matrices 
+falcao_seurat = purrr::imap(falcao_exp_filt,function(x,y){
+  CreateSeuratObject(counts = x,
+                     meta.data = falcao_meta[[y]])
+})
+
+#merge all plates into one 
+falcao = Merge_Seurat_List(falcao_seurat)
+falcao$condition = falcao$Group %>% as.factor %>% recode(Ctrl = 'no EAE',EAE = 'EAE', )
+```
+
+## Data analysis
+
+### Falcao et al 2018
+
+#### Subset to only oligodendrocytes
+
+```{r}
+falcao$MOL <- grepl('^MOL',falcao@meta.data$Renamed_clusternames)
+falcao.mol <- falcao %>% subset(MOL)
+DefaultAssay(falcao.mol)<-'RNA'
+```
+
+#### aggregate counts for pseudo-bulk
+
+```{r}
+#aggregate counts
+falcao.summed<-AggregateExpression(falcao.mol, 
+                                   group.by = c('Plate'), 
+                                   assays = 'RNA', 
+                                   slot = 'counts',
+                              
+                                   return.seurat = FALSE)
+
+#extract matrix and transpose row and columns
+falcao.cts<-falcao.summed$RNA
+
+#generate sample metadata
+falcao.coldata<-data_frame(samples = colnames(falcao.cts))
+  #from plate 290 to 295, groups info: Ctrl, Ctrl, EAE, EAE,EAE, Ctrl
+  falcao.coldata$condition<-c('Ctrl', 'Ctrl', rep('EAE', 3), 'Ctrl')
+  #make samples to rownames
+  rownames(falcao.coldata) = falcao.coldata$samples
+  
+#observe assembled count matrix and metadata
+  head(falcao.cts)
+  head(falcao.coldata)
+```
+
+#### QC using PCA
+
+```{r}
+falcao.pca.raw<-prcomp(t(falcao.cts)) #run PCA, scale=T
+
+#extract calculated variances to assist visualization
+  #get percentage of variant explained by each pc
+falcao.percentVAR<- round(100*falcao.pca.raw$sdev^2/sum(falcao.pca.raw$sdev^2), 1)
+
+  #get sd ratios of PC2/PC1 to adjust plot center
+falcao.sd.ratio<-sqrt(falcao.percentVAR[2]/falcao.percentVAR[2])
+
+#organize PC1, PC2 coordinate, and group information into one data frame
+
+falcao.dataGG<-data.frame(PC1 = falcao.pca.raw$x[,1], PC2 = falcao.pca.raw$x[,2],
+                          condition=falcao.coldata$condition)
+
+#plot sample distances
+(falcao.pca.plt<-ggplot(falcao.dataGG, aes(PC1, PC2, label= rownames(falcao.dataGG)))+
+    geom_point(aes(colour=condition))+
+    ggtitle('Falcao et al 2018, MOL pseudobulk profiles PCA')+
+    xlab(paste0('PC1, VarExp: ', falcao.percentVAR[1], '%'))+ #xaxis title
+    ylab(paste0('PC2, VarExp: ', falcao.percentVAR[2], '%'))+ #yaxis title
+    theme(plot.title = element_text(hjust = 0.5))+ #put title in the middle
+    coord_fixed(ratio = falcao.sd.ratio)+ #coordinate ratio based on sd ratio
+    scale_color_manual(values = c('darkorange','dodgerblue3'))+
+    geom_text_repel(aes(color=factor(condition)), fontface=2)
+  )
+
+```
+
+-   observed a clear outlier: SS2-16-292
+
+#### QC using sample embedding
+
+```{r}
+#process & embed falcao data
+falcao.mol = 
+  falcao.mol %>% 
+    NormalizeData(object = .,normalization.method = "LogNormalize",scale.factor = 1e4) %>%
+    FindVariableFeatures() %>% 
+    ScaleData(features = rownames(.)) %>% 
+    RunPCA() %>% 
+    RunUMAP(dims = 1:10)
+```
+
+```{r}
+DimPlot(falcao.mol,group.by = 'Plate')
+```
+
+-   in UMAP representation of single MOL cells all cells of plate SS2-16-292 seem to cluster separately from the rest as well
+
+```{r}
+#remove sample SS2-16-292 for Seurat data 
+falcao.mol = 
+  subset(falcao.mol, Plate != 'SS2-16-292')
+  falcao.mol %>% 
+    NormalizeData(object = .,normalization.method = "LogNormalize",scale.factor = 1e4) %>%
+    FindVariableFeatures() %>% 
+    ScaleData(features = rownames(.)) %>% 
+    RunPCA() %>% 
+    RunUMAP(dims = 1:10)
+```
+
+#### Pseudo-bulk DEG using DESeq2
+
+```{r}
+#remove sample SS2-16-292 for pseudobulk
+falcao.mol <- falcao.mol %>% subset(Plate != 'SS2-16-292')
+
+#clean outlier from pseudobulk
+falcao.cts<-falcao.cts[,colnames(falcao.cts) != 'SS2-16-292']
+falcao.coldata<-falcao.coldata[row.names(falcao.coldata) != 'SS2-16-292', ,drop=FALSE]
+
+#Create DESeq2 object
+  falcao.dds<-DESeqDataSetFromMatrix(countData = falcao.cts, colData = falcao.coldata,
+                                       design = ~ condition)
+
+#filter genes that has lower than 10 reads
+falcao.dds<-falcao.dds[rowSums(counts(falcao.dds)) >=10, ]
+
+############to do, PCA or MDS control
+
+#run DESeq
+falcao.dds<-DESeq(falcao.dds)
+resultsNames(falcao.dds)
+
+#extract results
+falcao.res<-results(falcao.dds, name = "condition_EAE_vs_Ctrl")
+falcao.res
+```
+
+#### extract significant result, observe DEG balance using volcano plot
+
+```{r}
+colnames(falcao.res)<-paste0('Falcao_EAEvsCtrl_',colnames(falcao.res))
+falcao.res<-as.data.frame(na.omit(falcao.res))
+
+volcano<-function(x, plt_title){
+  fc_position<-grep('log2FoldChange', colnames(x))
+  adjp_position<-grep('padj', colnames(x))
+  
+  x$diffexpressed<-'NO'
+  x$diffexpressed[x[,fc_position] > 0 & x[,adjp_position] < 0.05] <- 'UP'
+  x$diffexpressed[x[,fc_position] < 0 & x[,adjp_position] < 0.05] <- 'DOWN'
+  
+  x$deg_label<-NA
+  x$deg_label[x$diffexpressed != 'NO'] <- rownames(x)[x$diffexpressed != 'NO']
+  
+  ggplot(data = x, aes(x = x[,fc_position], y = -log10(x[,adjp_position]), col = diffexpressed, 
+                       #label = deg_label
+                       ))+
+    geom_point()+
+    theme_minimal()+
+    #geom_text_repel(max.overlaps = 20)+
+    scale_color_manual(values = c('lightblue3','grey','lightcoral'))+
+    geom_vline(xintercept = 0, col = 'grey48', linetype = 'longdash')+
+    geom_hline(yintercept = -log10(0.05), col='grey48', linetype = 'longdash')+
+    ggtitle(plt_title)
+}
+
+#plot a volcano for falcao pseudobulk result
+volcano(x = falcao.res, plt_title = 'Falcao EAEvsCtrl pseudobulk volcano plot')
+```
+
+### Meijer et al 2020
+
+#### Subset to Oligodendrocytes
+
+```{r}
+#only keep MOLs
+unique(meijer@meta.data$Final_celltypes)
+
+meijer <- subset(meijer, 
+                 subset = Final_celltypes %in% unique(grep('MOL',
+                                                           meijer$Final_celltypes,
+                                                           value = TRUE)))
+#visualize subset data
+DimPlot(meijer, group.by = 'Final_celltypes', label = TRUE)
+```
+
+#### repeat basic data processing
+
+```{r}
+#generate pure RNA profile obj
+meijer.re<-CreateSeuratObject(counts = meijer@assays$RNA@counts, meta.data = meijer@meta.data, project = 'meijer.re')
+
+#renormalize, rescale, pca, umap 
+meijer.re = 
+  meijer.re %>% 
+    NormalizeData(object = .,normalization.method = "LogNormalize",scale.factor = 1e4) %>%
+    FindVariableFeatures() %>% 
+    ScaleData(features = rownames(.)) %>% 
+    RunPCA() %>% 
+    RunUMAP(dims = 1:15)
+
+DimPlot(meijer.re, group.by = 'Final_celltypes')
+```
+
+#### DEG using wilcox test
+
+Meijer data DGE analysis and result visualization because of the lack of replicates, DGE analysis is run using wilcox test
+
+```{r}
+Idents(meijer.re)<- 'sample'
+
+meijer.res<-FindMarkers(meijer.re, ident.1 = 'EAE_peak', ident.2 = 'Ctr', min.pct = 0.1, logfc.threshold = 0.1)
+
+head(meijer.res)
+
+colnames(meijer.res)[c(2,5)]<-c('log2FoldChange','padj')
+colnames(meijer.res)<-paste0('meijer_EAEvsCtrl_', colnames(meijer.res))
+
+#plot a volcano for wheeler pseudobulk result
+volcano(x = meijer.res, plt_title = 'Meijer EAEvsCtrl DGE volcano plot')
+
+###still some batch effects after bulk normlization, but looks ok
+```
+
+##Enrichment analysis - run ORA analysis for GO:BP - for up and down regulated genes, respectively
+
+```{r}
+#| warning: false
+#| error: false
+
+#ORA GOBP enrichment for mouse data
+
+mouse.marker<-list(falcao.res, meijer.res)
+#merge significant result into one matrix, use adjP 0.05 as cutoff
+mouse.sig.up<-lapply(mouse.marker, function(x){
+  pvalue<-grep('padj',colnames(x))
+  fc<-grep('log2FoldChange', colnames(x))
+  return(subset(x, subset = x[,pvalue] < 0.05 & x[, fc] > 0))
+})
+
+mouse.sig.down<-lapply(mouse.marker, function(x){
+  pvalue<-grep('padj',colnames(x))
+  fc<-grep('log2FoldChange', colnames(x))
+  return(subset(x, subset = x[,pvalue] < 0.05 & x[, fc] < 0))
+})
+
+mouse.sig<-c(mouse.sig.up, mouse.sig.down)
+
+names(mouse.sig)<-c('falcao_up','meijer_up','falcao_down','meijer_down')
+
+#loop analysis for all four comparisons and store gprofiler2 result
+mouse.ora<-vector(mode = 'list', length = 4)
+for (i in 1:4){
+  #gprofiler2 enrichment
+  gostres_loop<-gost(query = rownames(mouse.sig[[i]]),
+                     organism = 'mmusculus', ordered_query = FALSE, multi_query = FALSE,
+                     significant = TRUE, exclude_iea = TRUE, evcodes = TRUE,
+                     measure_underrepresentation = FALSE,
+                     user_threshold = 0.05, correction_method = 'g_SCS',
+                     domain_scope = 'annotated', custom_bg = NULL,
+                     numeric_ns = '', sources = c('GO:BP'), as_short_link = FALSE)
+  
+  #export original result table
+  mouse.ora[[i]]<-gostres_loop$result
+  write.csv(gostres_loop$result[, c(1:13, 16)],
+            file = paste0(outdir, 'gprofiler_GOBP_', names(mouse.sig)[i],'.csv'))
+  
+  #prepare GEM table for cytoscape visualization
+  gem<-gostres_loop$result[,c('term_id','term_name','p_value','intersection')]
+  colnames(gem)<-c('GO.ID','Description','p.val','Genes')
+  gem$FDR<-gem$p.val
+  gem$Phenotype = paste0('+', i)
+  gem<-gem[,c('GO.ID','Description','p.val','FDR','Phenotype','Genes')]
+  
+  write.table(gem,
+            file = paste0(outdir, 'gprofiler_GOBP_GEM_', names(mouse.sig)[i],'.txt'),
+            sep = '\t', quote = FALSE, row.names = FALSE)
+}
+
+```
+
+## Figures
+
+### volcano plot
+
+```{r, include=FALSE}
+### Functions for plotting 
+
+#falcao.res<-read.csv('../falcao_mol_pseudobulk_DESeq2_result.csv', stringsAsFactors = #FALSE, row.names = 1)
+#meijer.res<-read.csv('../Meijer_MOL_DEG.csv', stringsAsFactors = FALSE, row.names = 1)
+
+#rerun the plotting function
+reverselog_trans <- function(base = exp(1)) {
+        trans <- function(x) -log(x, base)
+        inv <- function(x) base^(-x)
+        trans_new(paste0("reverselog-", format(base)), trans, inv, 
+                  log_breaks(base = base), 
+                  domain = c(1e-100, Inf))}
+ 
+
+volcano<-function(x, plt_title){
+  fc_position<-grep('log2FoldChange', colnames(x))
+  adjp_position<-grep('padj', colnames(x))
+  
+  x$diffexpressed<-'NO'
+  x$diffexpressed[x[,fc_position] > 0 & x[,adjp_position] < 0.05] <- 'UP'
+  x$diffexpressed[x[,fc_position] < 0 & x[,adjp_position] < 0.05] <- 'DOWN'
+  
+  x$deg_label<-NA
+  x$deg_label[x$diffexpressed != 'NO'] <- rownames(x)[x$diffexpressed != 'NO']
+  
+  ggplot(data = x, 
+         aes(x = x[,fc_position], 
+             y = x[,adjp_position], 
+             col = diffexpressed))+
+    geom_point()+
+    theme_minimal()+
+    #geom_text_repel(max.overlaps = 20)+
+    scale_color_manual(values = c('lightblue3','grey','lightcoral'))+
+    scale_y_continuous(trans = reverselog_trans(10)) +
+    geom_vline(xintercept = 0, col = 'grey48', linetype = 'longdash')+
+    geom_hline(yintercept = -log10(0.05), col='grey48', linetype = 'longdash')+
+    ggtitle(plt_title) + 
+    ylab('adjusted p value') + 
+    xlab('log2 fold change') + 
+    theme(legend.position = 'none')}
+```
+
+```{r,fig.width=5,fig.height=5}
+#| warning: false
+#| error: false
+
+
+volcano_falcao = volcano(x = falcao.res, plt_title = 'Falcao et al.')
+ggsave(paste0(figdir,'volcano_falcao.svg'),volcano_falcao,dpi = 600,width = 5,height = 5,units = 'cm')
+volcano_falcao
+
+volcano_meijer = volcano(x = meijer.res, plt_title = 'Meijer et al.')
+ggsave(paste0(figdir,'volcano_meijer.svg'),volcano_meijer,dpi = 600,width = 5,height = 5,units = 'cm')
+
+volcano_meijer
+
+
+```
+
+### GO aggreated heatmap using simplifyEnrichment
+
+```{r}
+#| warning: false
+#| error: false
+
+#note: the package only serves for visualizing GO database enriched results
+#re-read in all go results
+dir<-list.files(path = outdir, pattern = '.csv')
+
+en.results = lapply(paste0(outdir,dir), function(x){
+  tmp = read.csv(x, stringsAsFactors = FALSE) 
+  tmp2 = tmp[, c('p_value','term_id','term_name')] %>%
+    dplyr::mutate(.,sig_level = -log10(p_value)) %>%
+    dplyr::rename(., p.adjust = p_value) 
+  return(tmp2)
+})
+```
+
+```{r}
+#upregulated gene enriched GO BP terms
+  #organize in a list with required column names
+mouse.up.go<-list(en.results[[2]], en.results[[4]])
+names(mouse.up.go)<-c('Falcao','Meijer')
+
+mouse.down.go<-list(en.results[[1]], en.results[[3]])
+names(mouse.down.go)<-c('Falcao','Meijer')
+
+#visualization script met error, potentially due to bug
+#tried install Macports and ghostscript to handle pdf file exportation
+#transfer this part to ubuntu to operate the following code 
+plot_go_up = simplifyGOFromMultipleLists(mouse.up.go, 
+                            padj_cutoff = 0.05, 
+                            ont = 'BP',
+                            exclude_words = c('process','biological','responses','regulation'),
+                            db = 'org.Mm.eg.db',
+                           #change gradient color
+                           heatmap_param = list(col = c('steelblue4', 'white', 'orange3'),
+                                                breaks = c(1, 0.05, 0.0005)))
+
+plot_go_down = simplifyGOFromMultipleLists(mouse.down.go, 
+                            padj_cutoff = 0.05, 
+                            ont = 'BP',
+                            exclude_words = c('process','biological','responses','regulation'),
+                            db = 'org.Mm.eg.db',
+                            #change gradient color
+                            heatmap_param = list(col = c('steelblue4', 'white', 'orange3'),
+                            breaks = c(1, 0.05, 0.0005)))
+
+```
+
+### VlnPlots
+
+#### Setup
+
+##### Gene lists
+
+```{r}
+schirmer_genes = list(
+  mhc_i = c('B2m','H2-K1','H2-D1'),
+  oligodendrocyte_differentiation = c('Bcas1','Opalin','Sgms1','Sema6a'),
+  cell_stress = c('Atf4','Faim2','Junb'),
+  iron_accumulation = c('Ftl1','Fth1')
+)
+names(schirmer_genes) = c('MHC I','Oligodendrocyte differentiation and Cell-cell interaction','Cell stress','Iron accumulation')  
+names(schirmer_genes) = purrr::imap(schirmer_genes, function(x,y){paste0(length(x),'_',y)})
+
+
+```
+
+##### Plot configuration
+
+```{r}
 VlnPlotTheme = theme(panel.background = element_blank(),
                      axis.line.x = element_line(),
-                     axis.text.x = element_text(angle = 45, hjust = 1),
-                     axis.line.y = element_line(),
-                     text=element_text(size=8,  family="Arial"),
-                     axis.text = element_text(size=8,color = 'black'),
-                     legend.position = 'right',
-                     strip.background = element_blank()) 
+                     text=element_text(size=8),
+                     axis.text = element_text(size=8,color = 'black'))
+
+#set graphical plot paramters 
+cols = c('#D4D4D4','plum2')
+#colsCas = c('noEAE' = "#D4D4D4", 'EAE' = 'plum2')
+colsDots = c('black','#008000')
+jWidth = 0.3
+dWidth = 0.6
+pSize = 0.2
+pAlpha = 0.3 
+colsCas = c('noEAE' = "#D4D4D4", 'EAE' = 'plum2')
+
 ```
 
-```{r FetchExpression}
-Slc16a1_EAE = FetchData(meijer2022.ol,vars = 'Slc16a1', 
-                      assay = 'RNA',
-                      slot = 'data',
-                      cells = colnames(meijer2022.ol)[meijer2022.ol$stim =='EAE']) %>% 
-            gather() %>%
-            mutate(stim = 'EAE')
-Slc16a1_noEAE = FetchData(meijer2022.ol,vars = 'Slc16a1', 
-                      slot = 'data',
-                      cells = colnames(meijer2022.ol)[meijer2022.ol$stim =='noEAE']) %>% 
-            gather() %>%
-            mutate(stim = 'noEAE')
-
-Slc16a1_exp = rbind(Slc16a1_EAE,Slc16a1_noEAE)
-Slc16a1_exp$stim = factor(Slc16a1_exp$stim, levels = c('noEAE','EAE'))
+```{r}
+falcao = falcao.mol
+meijer = meijer.re
 ```
 
-```{r PlotViolins}
-Slc16a1Plot = ggplot(Slc16a1_exp, aes(x = stim,
+```{r}
+#| include: false
+#### Function for plotting function to get expression levels 
+
+
+get_exp = function(
+            obj1 = falcao,
+            obj1_name = 'Falcao',
+            obj2 = meijer,
+            obj2_name = 'Meijer',
+            genes = schirmer_genes$`3_Cell stress`,
+            group_by = 'condition'){
+  #get levels of the grouping variable 
+  grp_lev = levels(as.factor(obj1@meta.data[[group_by]]))
+  
+  #get gene expression values for first dataset, first group-level
+    obj1_grp1 = FetchData(obj1,vars = genes, slot = 'data',cells = colnames(obj1)[obj1@meta.data[group_by] == grp_lev[1]]) %>% 
+                gather() %>% 
+                mutate(object = obj1_name,
+                       group = grp_lev[1])
+    
+  #get gene expression values for first dataset, second group-level
+  obj1_grp2 = FetchData(obj1,vars = genes, slot = 'data',cells = colnames(obj1)[obj1@meta.data[group_by] == grp_lev[2]]) %>% 
+              gather() %>% 
+              mutate(object = obj1_name,
+                     group = grp_lev[2])
+   
+    #get gene expression values for second dataset, first group-level
+  obj2_grp1 = FetchData(obj2,vars = genes, slot = 'data',cells = colnames(obj2)[obj2@meta.data[group_by] == grp_lev[1]]) %>% 
+              gather() %>% 
+              mutate(object = obj2_name,
+                     group = grp_lev[1])
+  
+      #get gene expression values for second dataset, second group-level
+  obj2_grp2 = FetchData(obj2,vars = genes, slot = 'data',cells = colnames(obj2)[obj2@meta.data[group_by] == grp_lev[2]]) %>% 
+              gather() %>% 
+              mutate(object = obj2_name,
+                     group = grp_lev[2])
+  
+  df = rbind(obj1_grp1,obj1_grp2,obj2_grp1,obj2_grp2)
+
+  df$group = factor(df$group,levels = levels(obj1@meta.data[[group_by]]))
+  df}
+```
+
+```{r}
+#| include: false
+#### Function for plotting 
+plot_exp = function(df,name){
+  return = ggplot(df, aes(x = factor(key), 
                           y = value,
-                          fill = stim)) +
-                geom_violin(scale = 'width',lwd = lwd) + 
+                          fill = factor(group))) +
+                geom_split_violin(scale = 'width') + 
                 geom_jitter(position = position_jitterdodge(
                                           jitter.width = jWidth, 
                                           dodge.width = dWidth),
                             size = pSize,
                             alpha = pAlpha,
-                            stroke = 0) + 
-                scale_fill_discrete('Condition',type = colsCas) + 
-           #     scale_color_discrete('Sample',type = colsDots) + 
-              #  xlab('Slc16a1/MCT1 expression in Oligodendrocytes (Meijer et al. 2022)') + 
-                ylab('Log-normalized expression') +
-                xlab('') + 
-                VlnPlotTheme 
-Slc16a1Plot
-ggsave('Slc16a1_Meijer2022.png',plot = Slc16a1Plot, dpi = 600,width = 6,height = 5,units = 'cm')
-ggsave('Slc16a1_Meijer2022.svg',plot = Slc16a1Plot, dpi = 600,width = 6,height = 5,units = 'cm')
-
-
+                            stroke = 0,
+#                            aes(color = group)
+                            ) + 
+                scale_fill_discrete(type = cols) + 
+#                scale_color_discrete(type = colsDots) + 
+                facet_wrap(~object)+
+                theme(axis.text.x = element_text(angle = 45, hjust = 1),
+                      legend.position = 'none',
+                      axis.line.y = element_line(),
+                      axis.title.y = element_text()) + 
+                xlab(name) + 
+                ylab('Log1p-normalized expression') + 
+                VlnPlotTheme
+}
 ```
 
-# Session info
+#### plot genes dysregulated in human MOL (Schirmer et al)
+
+```{r, fig.width=5, fig.height = 5}
+genes_exp = lapply(schirmer_genes,function(x) get_exp(genes = x))
+
+plots = purrr::imap(genes_exp, function(x,y) {
+  name = strsplit(y,'_')[[1]][2]
+  plot_exp(x,name)}) 
+
+#add legend to last plot
+plots[[4]]  = plots[[4]] + theme(legend.position = 'right',
+                                 legend.title = element_blank())
+#increase widths parameter to accomodate  legend
+names(plots)[4] = paste0('3',gsub('\\d','',names(plots)[4]))
+```
+
+```{r, include = false}
+purrr::imap(plots,function(x,y) {
+  len = as.integer(strsplit(y,'_')[[1]][1])
+  name = strsplit(y,'_')[[1]][2]
+  ggsave(paste0(figdir,name,'.svg'), plot = x, dpi = 1200, width = (2*len+2), height = 6, units = 'cm')})
+```
+
+#### Plot Slc16a1 expression
+
+```{r,fig.width = 5,fig.height=5}
+genes_exp = get_exp(genes = 'Slc16a1')
+
+plots = plot_exp(genes_exp, 'Slc16a1') + theme(axis.text.x = element_blank(),
+                                               axis.ticks.x = element_blank(),
+                                               legend.position = 'right',
+                                               legend.title = element_blank())
+plots
+```
+
+```{r, include = false}
+ggsave(paste0(figdir,'Slc16a1.svg'), plot = plots, dpi = 1200, width = 6, height = 6, units = 'cm')
+```
+
+## sessionInfo
 
 ```{r}
-session_info()
+sessionInfo()
+```
+
+```{r include=FALSE}
+#renv::snapshot()
 ```
