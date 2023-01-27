@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Myelin insulation as a risk factor for axonal degeneration in autoimmune demyelinating disease. Reanalysis of scRNAseq of myelinating oligodendrocytes in EAE</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="EAE_OL_files/libs/clipboard/clipboard.min.js"></script>
+<script src="EAE_OL_files/libs/quarto-html/quarto.js"></script>
+<script src="EAE_OL_files/libs/quarto-html/popper.min.js"></script>
+<script src="EAE_OL_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="EAE_OL_files/libs/quarto-html/anchor.min.js"></script>
+<link href="EAE_OL_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="EAE_OL_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="EAE_OL_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="EAE_OL_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="EAE_OL_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#olg-reanalysis" id="toc-olg-reanalysis" class="nav-link active" data-scroll-target="#olg-reanalysis">OLG reanalysis</a>
+  <ul class="collapse">
+  <li><a href="#initialization" id="toc-initialization" class="nav-link" data-scroll-target="#initialization">Initialization</a>
+  <ul class="collapse">
+  <li><a href="#environment-preparation" id="toc-environment-preparation" class="nav-link" data-scroll-target="#environment-preparation">Environment preparation</a></li>
+  <li><a href="#document-setup" id="toc-document-setup" class="nav-link" data-scroll-target="#document-setup">Document setup</a></li>
+  <li><a href="#install-and-attach-required-packages" id="toc-install-and-attach-required-packages" class="nav-link" data-scroll-target="#install-and-attach-required-packages">Install and attach required packages</a></li>
+  <li><a href="#define-input-and-output-directories" id="toc-define-input-and-output-directories" class="nav-link" data-scroll-target="#define-input-and-output-directories">Define input and output directories</a></li>
+  </ul></li>
+  <li><a href="#data-download" id="toc-data-download" class="nav-link" data-scroll-target="#data-download">Data download</a>
+  <ul class="collapse">
+  <li><a href="#download-data-for-meijer-et-al.-2022" id="toc-download-data-for-meijer-et-al.-2022" class="nav-link" data-scroll-target="#download-data-for-meijer-et-al.-2022">Download data for Meijer et al.&nbsp;2022</a></li>
+  <li><a href="#download-data-for-falcao-et-al.-2018" id="toc-download-data-for-falcao-et-al.-2018" class="nav-link" data-scroll-target="#download-data-for-falcao-et-al.-2018">Download data for Falcao et al.&nbsp;2018</a></li>
+  </ul></li>
+  <li><a href="#data-analysis" id="toc-data-analysis" class="nav-link" data-scroll-target="#data-analysis">Data analysis</a>
+  <ul class="collapse">
+  <li><a href="#falcao-et-al-2018" id="toc-falcao-et-al-2018" class="nav-link" data-scroll-target="#falcao-et-al-2018">Falcao et al 2018</a></li>
+  <li><a href="#meijer-et-al-2020" id="toc-meijer-et-al-2020" class="nav-link" data-scroll-target="#meijer-et-al-2020">Meijer et al 2020</a></li>
+  </ul></li>
+  <li><a href="#figures" id="toc-figures" class="nav-link" data-scroll-target="#figures">Figures</a>
+  <ul class="collapse">
+  <li><a href="#volcano-plot" id="toc-volcano-plot" class="nav-link" data-scroll-target="#volcano-plot">volcano plot</a></li>
+  <li><a href="#go-aggreated-heatmap-using-simplifyenrichment" id="toc-go-aggreated-heatmap-using-simplifyenrichment" class="nav-link" data-scroll-target="#go-aggreated-heatmap-using-simplifyenrichment">GO aggreated heatmap using simplifyEnrichment</a></li>
+  <li><a href="#vlnplots" id="toc-vlnplots" class="nav-link" data-scroll-target="#vlnplots">VlnPlots</a></li>
+  </ul></li>
+  <li><a href="#sessioninfo" id="toc-sessioninfo" class="nav-link" data-scroll-target="#sessioninfo">sessionInfo</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Myelin insulation as a risk factor for axonal degeneration in autoimmune demyelinating disease. Reanalysis of scRNAseq of myelinating oligodendrocytes in EAE</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<section id="olg-reanalysis" class="level1">
+<h1>OLG reanalysis</h1>
+<p>This script contains reanalysis of external OLG scRNA-seq data (EAE vs WT)</p>
+<ul>
+<li>mouse: Falcao et al 2018, Meijer et al 2022</li>
+</ul>
+<section id="initialization" class="level2">
+<h2 class="anchored" data-anchor-id="initialization">Initialization</h2>
+<section id="environment-preparation" class="level3">
+<h3 class="anchored" data-anchor-id="environment-preparation">Environment preparation</h3>
+</section>
+<section id="document-setup" class="level3">
+<h3 class="anchored" data-anchor-id="document-setup">Document setup</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">message =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">warning =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">error =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="install-and-attach-required-packages" class="level3">
+<h3 class="anchored" data-anchor-id="install-and-attach-required-packages">Install and attach required packages</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#scRNA-seq analysis</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Seurat)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Signac)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SeuratDisk)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SingleCellExperiment)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dittoSeq)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sctransform)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scran)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scater)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scuttle)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gprofiler2)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">'org.Mm.eg.db'</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">'org.Hs.eg.db'</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scCustomize)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">#DEG analysis</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DESeq2)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#data wrangling</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(textshape)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(curl)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GEOquery)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(PCAtools)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">#visualization</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cowplot)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggVennDiagram)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ComplexHeatmap)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(simplifyEnrichment)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(viridis)</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(circlize)</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridtext)</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggtext)</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(facefuns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="define-input-and-output-directories" class="level3">
+<h3 class="anchored" data-anchor-id="define-input-and-output-directories">Define input and output directories</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>wd <span class="ot">=</span> <span class="fu">getwd</span>()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>indir <span class="ot">=</span> <span class="fu">paste0</span>(wd,<span class="st">'/scRNAdata/OL/'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(indir,<span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>outdir <span class="ot">=</span> <span class="fu">paste0</span>(wd,<span class="st">'/Output/OL/'</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(outdir,<span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>figdir <span class="ot">=</span> <span class="fu">paste0</span>(wd,<span class="st">'/figures/OL/'</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(figdir,<span class="at">recursive =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="data-download" class="level2">
+<h2 class="anchored" data-anchor-id="data-download">Data download</h2>
+<section id="download-data-for-meijer-et-al.-2022" class="level3">
+<h3 class="anchored" data-anchor-id="download-data-for-meijer-et-al.-2022">Download data for Meijer et al.&nbsp;2022</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>gse_meijer <span class="ot">=</span> <span class="st">'GSE193238'</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">file.exists</span>(<span class="fu">paste0</span>(indir,gse_meijer,<span class="st">'/GSE193238_EAE_CtrlPeak_multiomics_GEO.rds'</span>))){</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  supp_meijer <span class="ot">&lt;-</span> <span class="fu">getGEOSuppFiles</span>(gse_meijer,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">baseDir =</span> indir,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                               <span class="at">makeDirectory =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                               <span class="at">filter_regex =</span> <span class="st">'.rds'</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>meijer <span class="ot">=</span> <span class="fu">readRDS</span>(<span class="fu">paste0</span>(indir,gse_meijer,<span class="st">'/GSE193238_EAE_CtrlPeak_multiomics_GEO.rds'</span>))</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>meijer<span class="sc">$</span>condition <span class="ot">=</span> meijer<span class="sc">$</span>sample <span class="sc">%&gt;%</span> as.factor <span class="sc">%&gt;%</span> <span class="fu">recode</span>(<span class="at">Ctr =</span> <span class="st">'no EAE'</span>,<span class="at">EAE_peak =</span> <span class="st">'EAE'</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#the file compression seems to be corruputed. it's possible you need to download the file by hand and exctract it manually. The correct file size should be 3.2 GB</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="download-data-for-falcao-et-al.-2018" class="level3">
+<h3 class="anchored" data-anchor-id="download-data-for-falcao-et-al.-2018">Download data for Falcao et al.&nbsp;2018</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gse_falcao <span class="ot">=</span> <span class="st">'GSE113973'</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#the geo record contains individual count matrices for each plate </span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>supp_falcao <span class="ot">=</span> <span class="fu">paste0</span>(indir,gse_falcao,<span class="st">'/'</span>,<span class="fu">dir</span>(<span class="fu">paste0</span>(indir,gse_falcao)))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">length</span>(supp_falcao) <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>supp_falcao <span class="ot">&lt;-</span> <span class="fu">getGEOSuppFiles</span>(gse_falcao,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                               <span class="at">baseDir =</span> indir,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                               <span class="at">makeDirectory =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                               <span class="at">filter_regex =</span> <span class="st">'counts.tab.gz'</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                               <span class="at">fetch_files =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                rownames}</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>falcao_exp <span class="ot">=</span> <span class="fu">lapply</span>(supp_falcao,<span class="cf">function</span>(x) {</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  exp <span class="ot">=</span> <span class="fu">read_tsv</span>(x)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  genes <span class="ot">=</span> <span class="fu">make.unique</span>(exp<span class="sc">$</span>gene)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  mat <span class="ot">=</span> <span class="fu">as.matrix</span>(exp[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(mat) <span class="ot">=</span> genes</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  return <span class="ot">=</span> mat  })</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#the annotation data is not contained in the GEO record but can only be retrieved from the UCSC cell browser entry of the dataset</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Download annotation</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>falcao_meta <span class="ot">=</span> <span class="fu">paste0</span>(outdir,<span class="st">'falcao_annotation.rds'</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">file.exists</span>(<span class="fu">paste0</span>(outdir,<span class="st">'falcao_annotation.rds'</span>))) {</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>      falcao_meta <span class="ot">=</span> <span class="fu">curl_download</span>(<span class="at">url =</span> <span class="st">'https://cells.ucsc.edu/oligo-lineage-ms/Annotation.rds'</span>,</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">destfile =</span> <span class="fu">paste0</span>(outdir,<span class="st">'falcao_annotation.rds'</span>))}</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>falcao_meta <span class="ot">=</span> <span class="fu">readRDS</span>(<span class="fu">paste0</span>(outdir,<span class="st">'falcao_annotation.rds'</span>))</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co"># split annotation </span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>falcao_meta <span class="ot">=</span> <span class="fu">split</span>(falcao_meta, falcao_meta<span class="sc">$</span>Plate)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co">#clean up rownames</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>falcao_meta <span class="ot">=</span> <span class="fu">lapply</span>(falcao_meta,<span class="cf">function</span>(x) {</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>                     tmp <span class="ot">=</span> x</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">rownames</span>(tmp) <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">'counts_...</span><span class="sc">\\</span><span class="st">.tab</span><span class="sc">\\</span><span class="st">.'</span>,<span class="st">''</span>,<span class="fu">rownames</span>(tmp))</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>                     return <span class="ot">=</span> tmp})</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="co">#name expression matrices </span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(falcao_exp) <span class="ot">=</span> <span class="fu">names</span>(falcao_meta)</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="co">#subset expression matrices to only include annotated cells</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>falcao_exp_filt <span class="ot">=</span> purrr<span class="sc">::</span><span class="fu">imap</span>(falcao_exp,<span class="cf">function</span>(x,y){</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>  x[,<span class="fu">rownames</span>(falcao_meta[[y]])]</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="co">#create seurat objects from annotation and expression matrices </span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>falcao_seurat <span class="ot">=</span> purrr<span class="sc">::</span><span class="fu">imap</span>(falcao_exp_filt,<span class="cf">function</span>(x,y){</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">CreateSeuratObject</span>(<span class="at">counts =</span> x,</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>                     <span class="at">meta.data =</span> falcao_meta[[y]])</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="co">#merge all plates into one </span></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>falcao <span class="ot">=</span> <span class="fu">Merge_Seurat_List</span>(falcao_seurat)</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>falcao<span class="sc">$</span>condition <span class="ot">=</span> falcao<span class="sc">$</span>Group <span class="sc">%&gt;%</span> as.factor <span class="sc">%&gt;%</span> <span class="fu">recode</span>(<span class="at">Ctrl =</span> <span class="st">'no EAE'</span>,<span class="at">EAE =</span> <span class="st">'EAE'</span>, )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="data-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="data-analysis">Data analysis</h2>
+<section id="falcao-et-al-2018" class="level3">
+<h3 class="anchored" data-anchor-id="falcao-et-al-2018">Falcao et al 2018</h3>
+<section id="subset-to-only-oligodendrocytes" class="level4">
+<h4 class="anchored" data-anchor-id="subset-to-only-oligodendrocytes">Subset to only oligodendrocytes</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>falcao<span class="sc">$</span>MOL <span class="ot">&lt;-</span> <span class="fu">grepl</span>(<span class="st">'^MOL'</span>,falcao<span class="sc">@</span>meta.data<span class="sc">$</span>Renamed_clusternames)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>falcao.mol <span class="ot">&lt;-</span> falcao <span class="sc">%&gt;%</span> <span class="fu">subset</span>(MOL)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">DefaultAssay</span>(falcao.mol)<span class="ot">&lt;-</span><span class="st">'RNA'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="aggregate-counts-for-pseudo-bulk" class="level4">
+<h4 class="anchored" data-anchor-id="aggregate-counts-for-pseudo-bulk">aggregate counts for pseudo-bulk</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#aggregate counts</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>falcao.summed<span class="ot">&lt;-</span><span class="fu">AggregateExpression</span>(falcao.mol, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">group.by =</span> <span class="fu">c</span>(<span class="st">'Plate'</span>), </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">assays =</span> <span class="st">'RNA'</span>, </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">slot =</span> <span class="st">'counts'</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                              </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">return.seurat =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#extract matrix and transpose row and columns</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>falcao.cts<span class="ot">&lt;-</span>falcao.summed<span class="sc">$</span>RNA</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#generate sample metadata</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>falcao.coldata<span class="ot">&lt;-</span><span class="fu">data_frame</span>(<span class="at">samples =</span> <span class="fu">colnames</span>(falcao.cts))</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="co">#from plate 290 to 295, groups info: Ctrl, Ctrl, EAE, EAE,EAE, Ctrl</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  falcao.coldata<span class="sc">$</span>condition<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">'Ctrl'</span>, <span class="st">'Ctrl'</span>, <span class="fu">rep</span>(<span class="st">'EAE'</span>, <span class="dv">3</span>), <span class="st">'Ctrl'</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="co">#make samples to rownames</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>(falcao.coldata) <span class="ot">=</span> falcao.coldata<span class="sc">$</span>samples</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#observe assembled count matrix and metadata</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(falcao.cts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>       SS2-16-290 SS2-16-291 SS2-16-292 SS2-16-293 SS2-16-294 SS2-16-295
+Adora1      19856      14258      29987      10457      19095      21180
+Sntg1         114          1          0          0          2          0
+Prim2         638       1667        442        557       1019       1609
+Bai3           14       1166        155        510        426        559
+Cflar         536        686       1214        722       1033        753
+Gpr39           0          0          0          0          0          0</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(falcao.coldata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  samples    condition
+  &lt;chr&gt;      &lt;chr&gt;    
+1 SS2-16-290 Ctrl     
+2 SS2-16-291 Ctrl     
+3 SS2-16-292 EAE      
+4 SS2-16-293 EAE      
+5 SS2-16-294 EAE      
+6 SS2-16-295 Ctrl     </code></pre>
+</div>
+</div>
+</section>
+<section id="qc-using-pca" class="level4">
+<h4 class="anchored" data-anchor-id="qc-using-pca">QC using PCA</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>falcao.pca.raw<span class="ot">&lt;-</span><span class="fu">prcomp</span>(<span class="fu">t</span>(falcao.cts)) <span class="co">#run PCA, scale=T</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">#extract calculated variances to assist visualization</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#get percentage of variant explained by each pc</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>falcao.percentVAR<span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>falcao.pca.raw<span class="sc">$</span>sdev<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="fu">sum</span>(falcao.pca.raw<span class="sc">$</span>sdev<span class="sc">^</span><span class="dv">2</span>), <span class="dv">1</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#get sd ratios of PC2/PC1 to adjust plot center</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>falcao.sd.ratio<span class="ot">&lt;-</span><span class="fu">sqrt</span>(falcao.percentVAR[<span class="dv">2</span>]<span class="sc">/</span>falcao.percentVAR[<span class="dv">2</span>])</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">#organize PC1, PC2 coordinate, and group information into one data frame</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>falcao.dataGG<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">PC1 =</span> falcao.pca.raw<span class="sc">$</span>x[,<span class="dv">1</span>], <span class="at">PC2 =</span> falcao.pca.raw<span class="sc">$</span>x[,<span class="dv">2</span>],</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>                          <span class="at">condition=</span>falcao.coldata<span class="sc">$</span>condition)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co">#plot sample distances</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>(falcao.pca.plt<span class="ot">&lt;-</span><span class="fu">ggplot</span>(falcao.dataGG, <span class="fu">aes</span>(PC1, PC2, <span class="at">label=</span> <span class="fu">rownames</span>(falcao.dataGG)))<span class="sc">+</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>condition))<span class="sc">+</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">'Falcao et al 2018, MOL pseudobulk profiles PCA'</span>)<span class="sc">+</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="fu">paste0</span>(<span class="st">'PC1, VarExp: '</span>, falcao.percentVAR[<span class="dv">1</span>], <span class="st">'%'</span>))<span class="sc">+</span> <span class="co">#xaxis title</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="fu">paste0</span>(<span class="st">'PC2, VarExp: '</span>, falcao.percentVAR[<span class="dv">2</span>], <span class="st">'%'</span>))<span class="sc">+</span> <span class="co">#yaxis title</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))<span class="sc">+</span> <span class="co">#put title in the middle</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_fixed</span>(<span class="at">ratio =</span> falcao.sd.ratio)<span class="sc">+</span> <span class="co">#coordinate ratio based on sd ratio</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">'darkorange'</span>,<span class="st">'dodgerblue3'</span>))<span class="sc">+</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">color=</span><span class="fu">factor</span>(condition)), <span class="at">fontface=</span><span class="dv">2</span>)</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ul>
+<li>observed a clear outlier: SS2-16-292</li>
+</ul>
+</section>
+<section id="qc-using-sample-embedding" class="level4">
+<h4 class="anchored" data-anchor-id="qc-using-sample-embedding">QC using sample embedding</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#process &amp; embed falcao data</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>falcao.mol <span class="ot">=</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  falcao.mol <span class="sc">%&gt;%</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">NormalizeData</span>(<span class="at">object =</span> .,<span class="at">normalization.method =</span> <span class="st">"LogNormalize"</span>,<span class="at">scale.factor =</span> <span class="fl">1e4</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">FindVariableFeatures</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ScaleData</span>(<span class="at">features =</span> <span class="fu">rownames</span>(.)) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">RunPCA</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">RunUMAP</span>(<span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(falcao.mol,<span class="at">group.by =</span> <span class="st">'Plate'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ul>
+<li>in UMAP representation of single MOL cells all cells of plate SS2-16-292 seem to cluster separately from the rest as well</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#remove sample SS2-16-292 for Seurat data </span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>falcao.mol <span class="ot">=</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">subset</span>(falcao.mol, Plate <span class="sc">!=</span> <span class="st">'SS2-16-292'</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  falcao.mol <span class="sc">%&gt;%</span> </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">NormalizeData</span>(<span class="at">object =</span> .,<span class="at">normalization.method =</span> <span class="st">"LogNormalize"</span>,<span class="at">scale.factor =</span> <span class="fl">1e4</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">FindVariableFeatures</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ScaleData</span>(<span class="at">features =</span> <span class="fu">rownames</span>(.)) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">RunPCA</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">RunUMAP</span>(<span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>An object of class Seurat 
+24490 features across 940 samples within 1 assay 
+Active assay: RNA (24490 features, 2000 variable features)
+ 2 dimensional reductions calculated: pca, umap</code></pre>
+</div>
+</div>
+</section>
+<section id="pseudo-bulk-deg-using-deseq2" class="level4">
+<h4 class="anchored" data-anchor-id="pseudo-bulk-deg-using-deseq2">Pseudo-bulk DEG using DESeq2</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#remove sample SS2-16-292 for pseudobulk</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>falcao.mol <span class="ot">&lt;-</span> falcao.mol <span class="sc">%&gt;%</span> <span class="fu">subset</span>(Plate <span class="sc">!=</span> <span class="st">'SS2-16-292'</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#clean outlier from pseudobulk</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>falcao.cts<span class="ot">&lt;-</span>falcao.cts[,<span class="fu">colnames</span>(falcao.cts) <span class="sc">!=</span> <span class="st">'SS2-16-292'</span>]</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>falcao.coldata<span class="ot">&lt;-</span>falcao.coldata[<span class="fu">row.names</span>(falcao.coldata) <span class="sc">!=</span> <span class="st">'SS2-16-292'</span>, ,drop<span class="ot">=</span><span class="cn">FALSE</span>]</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Create DESeq2 object</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  falcao.dds<span class="ot">&lt;-</span><span class="fu">DESeqDataSetFromMatrix</span>(<span class="at">countData =</span> falcao.cts, <span class="at">colData =</span> falcao.coldata,</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">design =</span> <span class="sc">~</span> condition)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="co">#filter genes that has lower than 10 reads</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>falcao.dds<span class="ot">&lt;-</span>falcao.dds[<span class="fu">rowSums</span>(<span class="fu">counts</span>(falcao.dds)) <span class="sc">&gt;=</span><span class="dv">10</span>, ]</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="do">############to do, PCA or MDS control</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="co">#run DESeq</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>falcao.dds<span class="ot">&lt;-</span><span class="fu">DESeq</span>(falcao.dds)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="fu">resultsNames</span>(falcao.dds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Intercept"             "condition_EAE_vs_Ctrl"</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">#extract results</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>falcao.res<span class="ot">&lt;-</span><span class="fu">results</span>(falcao.dds, <span class="at">name =</span> <span class="st">"condition_EAE_vs_Ctrl"</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>falcao.res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>log2 fold change (MLE): condition EAE vs Ctrl 
+Wald test p-value: condition EAE vs Ctrl 
+DataFrame with 16536 rows and 6 columns
+         baseMean log2FoldChange     lfcSE       stat    pvalue      padj
+        &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt;  &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt;
+Adora1 16326.5212     -0.0326299  0.176061 -0.1853336 0.8529674  0.967251
+Sntg1     20.9765     -5.2517296  3.365019 -1.5606834 0.1185985  0.449492
+Prim2   1050.0012     -0.4554811  0.493946 -0.9221275 0.3564621  0.737714
+Bai3     547.9571      0.0897899  1.210080  0.0742016 0.9408500  0.989433
+Cflar    751.0066      0.7403866  0.351701  2.1051611 0.0352773  0.224831
+...           ...            ...       ...        ...       ...       ...
+Prdx3  10342.0878     -0.3378690  0.240540  -1.404628  0.160132  0.519552
+Sfxn4   1257.1419     -0.2014504  0.341870  -0.589261  0.555686  0.869381
+Gm7102    52.8292      0.4894105  0.986932   0.495891  0.619971  0.895623
+Csf2ra   681.4682     -0.0613268  0.339739  -0.180511  0.856751  0.968161
+eGFP   13900.1342      2.6063330  3.315592   0.786084        NA        NA</code></pre>
+</div>
+</div>
+</section>
+<section id="extract-significant-result-observe-deg-balance-using-volcano-plot" class="level4">
+<h4 class="anchored" data-anchor-id="extract-significant-result-observe-deg-balance-using-volcano-plot">extract significant result, observe DEG balance using volcano plot</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(falcao.res)<span class="ot">&lt;-</span><span class="fu">paste0</span>(<span class="st">'Falcao_EAEvsCtrl_'</span>,<span class="fu">colnames</span>(falcao.res))</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>falcao.res<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(<span class="fu">na.omit</span>(falcao.res))</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>volcano<span class="ot">&lt;-</span><span class="cf">function</span>(x, plt_title){</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  fc_position<span class="ot">&lt;-</span><span class="fu">grep</span>(<span class="st">'log2FoldChange'</span>, <span class="fu">colnames</span>(x))</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  adjp_position<span class="ot">&lt;-</span><span class="fu">grep</span>(<span class="st">'padj'</span>, <span class="fu">colnames</span>(x))</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span>diffexpressed<span class="ot">&lt;-</span><span class="st">'NO'</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span>diffexpressed[x[,fc_position] <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> x[,adjp_position] <span class="sc">&lt;</span> <span class="fl">0.05</span>] <span class="ot">&lt;-</span> <span class="st">'UP'</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span>diffexpressed[x[,fc_position] <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> x[,adjp_position] <span class="sc">&lt;</span> <span class="fl">0.05</span>] <span class="ot">&lt;-</span> <span class="st">'DOWN'</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span>deg_label<span class="ot">&lt;-</span><span class="cn">NA</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span>deg_label[x<span class="sc">$</span>diffexpressed <span class="sc">!=</span> <span class="st">'NO'</span>] <span class="ot">&lt;-</span> <span class="fu">rownames</span>(x)[x<span class="sc">$</span>diffexpressed <span class="sc">!=</span> <span class="st">'NO'</span>]</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span> x, <span class="fu">aes</span>(<span class="at">x =</span> x[,fc_position], <span class="at">y =</span> <span class="sc">-</span><span class="fu">log10</span>(x[,adjp_position]), <span class="at">col =</span> diffexpressed, </span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>                       <span class="co">#label = deg_label</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>                       ))<span class="sc">+</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    <span class="co">#geom_text_repel(max.overlaps = 20)+</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">'lightblue3'</span>,<span class="st">'grey'</span>,<span class="st">'lightcoral'</span>))<span class="sc">+</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>, <span class="at">col =</span> <span class="st">'grey48'</span>, <span class="at">linetype =</span> <span class="st">'longdash'</span>)<span class="sc">+</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="sc">-</span><span class="fu">log10</span>(<span class="fl">0.05</span>), <span class="at">col=</span><span class="st">'grey48'</span>, <span class="at">linetype =</span> <span class="st">'longdash'</span>)<span class="sc">+</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(plt_title)</span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a><span class="co">#plot a volcano for falcao pseudobulk result</span></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a><span class="fu">volcano</span>(<span class="at">x =</span> falcao.res, <span class="at">plt_title =</span> <span class="st">'Falcao EAEvsCtrl pseudobulk volcano plot'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="meijer-et-al-2020" class="level3">
+<h3 class="anchored" data-anchor-id="meijer-et-al-2020">Meijer et al 2020</h3>
+<section id="subset-to-oligodendrocytes" class="level4">
+<h4 class="anchored" data-anchor-id="subset-to-oligodendrocytes">Subset to Oligodendrocytes</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#only keep MOLs</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(meijer<span class="sc">@</span>meta.data<span class="sc">$</span>Final_celltypes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "MOL56_EAE" "MOL56_Ctr" "MOL12_EAE" "Astro"     "MiGl"      "MOL3_EAE" 
+ [7] "MOL_Ctr"   "MOL2_Ctr"  "OPC_Ctr"   "OPC_EAE"   "NFOL"      "COP"      </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>meijer <span class="ot">&lt;-</span> <span class="fu">subset</span>(meijer, </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">subset =</span> Final_celltypes <span class="sc">%in%</span> <span class="fu">unique</span>(<span class="fu">grep</span>(<span class="st">'MOL'</span>,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                                                           meijer<span class="sc">$</span>Final_celltypes,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">value =</span> <span class="cn">TRUE</span>)))</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co">#visualize subset data</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(meijer, <span class="at">group.by =</span> <span class="st">'Final_celltypes'</span>, <span class="at">label =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="repeat-basic-data-processing" class="level4">
+<h4 class="anchored" data-anchor-id="repeat-basic-data-processing">repeat basic data processing</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">#generate pure RNA profile obj</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>meijer.re<span class="ot">&lt;-</span><span class="fu">CreateSeuratObject</span>(<span class="at">counts =</span> meijer<span class="sc">@</span>assays<span class="sc">$</span>RNA<span class="sc">@</span>counts, <span class="at">meta.data =</span> meijer<span class="sc">@</span>meta.data, <span class="at">project =</span> <span class="st">'meijer.re'</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co">#renormalize, rescale, pca, umap </span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>meijer.re <span class="ot">=</span> </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  meijer.re <span class="sc">%&gt;%</span> </span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">NormalizeData</span>(<span class="at">object =</span> .,<span class="at">normalization.method =</span> <span class="st">"LogNormalize"</span>,<span class="at">scale.factor =</span> <span class="fl">1e4</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">FindVariableFeatures</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ScaleData</span>(<span class="at">features =</span> <span class="fu">rownames</span>(.)) <span class="sc">%&gt;%</span> </span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">RunPCA</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">RunUMAP</span>(<span class="at">dims =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="fu">DimPlot</span>(meijer.re, <span class="at">group.by =</span> <span class="st">'Final_celltypes'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="deg-using-wilcox-test" class="level4">
+<h4 class="anchored" data-anchor-id="deg-using-wilcox-test">DEG using wilcox test</h4>
+<p>Meijer data DGE analysis and result visualization because of the lack of replicates, DGE analysis is run using wilcox test</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Idents</span>(meijer.re)<span class="ot">&lt;-</span> <span class="st">'sample'</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>meijer.res<span class="ot">&lt;-</span><span class="fu">FindMarkers</span>(meijer.re, <span class="at">ident.1 =</span> <span class="st">'EAE_peak'</span>, <span class="at">ident.2 =</span> <span class="st">'Ctr'</span>, <span class="at">min.pct =</span> <span class="fl">0.1</span>, <span class="at">logfc.threshold =</span> <span class="fl">0.1</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(meijer.res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      p_val avg_log2FC pct.1 pct.2 p_val_adj
+Stat1     0   2.821664 0.900 0.076         0
+B2m       0   5.221057 0.990 0.140         0
+Zbp1      0   1.306073 0.468 0.000         0
+Gbp7      0   2.180216 0.710 0.001         0
+Gbp3      0   1.999629 0.619 0.000         0
+Oasl2     0   1.427295 0.493 0.000         0</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(meijer.res)[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">5</span>)]<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">'log2FoldChange'</span>,<span class="st">'padj'</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(meijer.res)<span class="ot">&lt;-</span><span class="fu">paste0</span>(<span class="st">'meijer_EAEvsCtrl_'</span>, <span class="fu">colnames</span>(meijer.res))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co">#plot a volcano for wheeler pseudobulk result</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">volcano</span>(<span class="at">x =</span> meijer.res, <span class="at">plt_title =</span> <span class="st">'Meijer EAEvsCtrl DGE volcano plot'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="do">###still some batch effects after bulk normlization, but looks ok</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>##Enrichment analysis - run ORA analysis for GO:BP - for up and down regulated genes, respectively</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ORA GOBP enrichment for mouse data</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>mouse.marker<span class="ot">&lt;-</span><span class="fu">list</span>(falcao.res, meijer.res)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co">#merge significant result into one matrix, use adjP 0.05 as cutoff</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>mouse.sig.up<span class="ot">&lt;-</span><span class="fu">lapply</span>(mouse.marker, <span class="cf">function</span>(x){</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  pvalue<span class="ot">&lt;-</span><span class="fu">grep</span>(<span class="st">'padj'</span>,<span class="fu">colnames</span>(x))</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  fc<span class="ot">&lt;-</span><span class="fu">grep</span>(<span class="st">'log2FoldChange'</span>, <span class="fu">colnames</span>(x))</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">subset</span>(x, <span class="at">subset =</span> x[,pvalue] <span class="sc">&lt;</span> <span class="fl">0.05</span> <span class="sc">&amp;</span> x[, fc] <span class="sc">&gt;</span> <span class="dv">0</span>))</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>mouse.sig.down<span class="ot">&lt;-</span><span class="fu">lapply</span>(mouse.marker, <span class="cf">function</span>(x){</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  pvalue<span class="ot">&lt;-</span><span class="fu">grep</span>(<span class="st">'padj'</span>,<span class="fu">colnames</span>(x))</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  fc<span class="ot">&lt;-</span><span class="fu">grep</span>(<span class="st">'log2FoldChange'</span>, <span class="fu">colnames</span>(x))</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">subset</span>(x, <span class="at">subset =</span> x[,pvalue] <span class="sc">&lt;</span> <span class="fl">0.05</span> <span class="sc">&amp;</span> x[, fc] <span class="sc">&lt;</span> <span class="dv">0</span>))</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>mouse.sig<span class="ot">&lt;-</span><span class="fu">c</span>(mouse.sig.up, mouse.sig.down)</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(mouse.sig)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">'falcao_up'</span>,<span class="st">'meijer_up'</span>,<span class="st">'falcao_down'</span>,<span class="st">'meijer_down'</span>)</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a><span class="co">#loop analysis for all four comparisons and store gprofiler2 result</span></span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>mouse.ora<span class="ot">&lt;-</span><span class="fu">vector</span>(<span class="at">mode =</span> <span class="st">'list'</span>, <span class="at">length =</span> <span class="dv">4</span>)</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>){</span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>  <span class="co">#gprofiler2 enrichment</span></span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>  gostres_loop<span class="ot">&lt;-</span><span class="fu">gost</span>(<span class="at">query =</span> <span class="fu">rownames</span>(mouse.sig[[i]]),</span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>                     <span class="at">organism =</span> <span class="st">'mmusculus'</span>, <span class="at">ordered_query =</span> <span class="cn">FALSE</span>, <span class="at">multi_query =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>                     <span class="at">significant =</span> <span class="cn">TRUE</span>, <span class="at">exclude_iea =</span> <span class="cn">TRUE</span>, <span class="at">evcodes =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a>                     <span class="at">measure_underrepresentation =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>                     <span class="at">user_threshold =</span> <span class="fl">0.05</span>, <span class="at">correction_method =</span> <span class="st">'g_SCS'</span>,</span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a>                     <span class="at">domain_scope =</span> <span class="st">'annotated'</span>, <span class="at">custom_bg =</span> <span class="cn">NULL</span>,</span>
+<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a>                     <span class="at">numeric_ns =</span> <span class="st">''</span>, <span class="at">sources =</span> <span class="fu">c</span>(<span class="st">'GO:BP'</span>), <span class="at">as_short_link =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a>  <span class="co">#export original result table</span></span>
+<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a>  mouse.ora[[i]]<span class="ot">&lt;-</span>gostres_loop<span class="sc">$</span>result</span>
+<span id="cb29-35"><a href="#cb29-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">write.csv</span>(gostres_loop<span class="sc">$</span>result[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">13</span>, <span class="dv">16</span>)],</span>
+<span id="cb29-36"><a href="#cb29-36" aria-hidden="true" tabindex="-1"></a>            <span class="at">file =</span> <span class="fu">paste0</span>(outdir, <span class="st">'gprofiler_GOBP_'</span>, <span class="fu">names</span>(mouse.sig)[i],<span class="st">'.csv'</span>))</span>
+<span id="cb29-37"><a href="#cb29-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-38"><a href="#cb29-38" aria-hidden="true" tabindex="-1"></a>  <span class="co">#prepare GEM table for cytoscape visualization</span></span>
+<span id="cb29-39"><a href="#cb29-39" aria-hidden="true" tabindex="-1"></a>  gem<span class="ot">&lt;-</span>gostres_loop<span class="sc">$</span>result[,<span class="fu">c</span>(<span class="st">'term_id'</span>,<span class="st">'term_name'</span>,<span class="st">'p_value'</span>,<span class="st">'intersection'</span>)]</span>
+<span id="cb29-40"><a href="#cb29-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(gem)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">'GO.ID'</span>,<span class="st">'Description'</span>,<span class="st">'p.val'</span>,<span class="st">'Genes'</span>)</span>
+<span id="cb29-41"><a href="#cb29-41" aria-hidden="true" tabindex="-1"></a>  gem<span class="sc">$</span>FDR<span class="ot">&lt;-</span>gem<span class="sc">$</span>p.val</span>
+<span id="cb29-42"><a href="#cb29-42" aria-hidden="true" tabindex="-1"></a>  gem<span class="sc">$</span>Phenotype <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">'+'</span>, i)</span>
+<span id="cb29-43"><a href="#cb29-43" aria-hidden="true" tabindex="-1"></a>  gem<span class="ot">&lt;-</span>gem[,<span class="fu">c</span>(<span class="st">'GO.ID'</span>,<span class="st">'Description'</span>,<span class="st">'p.val'</span>,<span class="st">'FDR'</span>,<span class="st">'Phenotype'</span>,<span class="st">'Genes'</span>)]</span>
+<span id="cb29-44"><a href="#cb29-44" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-45"><a href="#cb29-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">write.table</span>(gem,</span>
+<span id="cb29-46"><a href="#cb29-46" aria-hidden="true" tabindex="-1"></a>            <span class="at">file =</span> <span class="fu">paste0</span>(outdir, <span class="st">'gprofiler_GOBP_GEM_'</span>, <span class="fu">names</span>(mouse.sig)[i],<span class="st">'.txt'</span>),</span>
+<span id="cb29-47"><a href="#cb29-47" aria-hidden="true" tabindex="-1"></a>            <span class="at">sep =</span> <span class="st">'</span><span class="sc">\t</span><span class="st">'</span>, <span class="at">quote =</span> <span class="cn">FALSE</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb29-48"><a href="#cb29-48" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+</section>
+<section id="figures" class="level2">
+<h2 class="anchored" data-anchor-id="figures">Figures</h2>
+<section id="volcano-plot" class="level3">
+<h3 class="anchored" data-anchor-id="volcano-plot">volcano plot</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>volcano_falcao <span class="ot">=</span> <span class="fu">volcano</span>(<span class="at">x =</span> falcao.res, <span class="at">plt_title =</span> <span class="st">'Falcao et al.'</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="fu">paste0</span>(figdir,<span class="st">'volcano_falcao.svg'</span>),volcano_falcao,<span class="at">dpi =</span> <span class="dv">600</span>,<span class="at">width =</span> <span class="dv">5</span>,<span class="at">height =</span> <span class="dv">5</span>,<span class="at">units =</span> <span class="st">'cm'</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>volcano_falcao</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="480"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>volcano_meijer <span class="ot">=</span> <span class="fu">volcano</span>(<span class="at">x =</span> meijer.res, <span class="at">plt_title =</span> <span class="st">'Meijer et al.'</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="fu">paste0</span>(figdir,<span class="st">'volcano_meijer.svg'</span>),volcano_meijer,<span class="at">dpi =</span> <span class="dv">600</span>,<span class="at">width =</span> <span class="dv">5</span>,<span class="at">height =</span> <span class="dv">5</span>,<span class="at">units =</span> <span class="st">'cm'</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>volcano_meijer</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+</section>
+<section id="go-aggreated-heatmap-using-simplifyenrichment" class="level3">
+<h3 class="anchored" data-anchor-id="go-aggreated-heatmap-using-simplifyenrichment">GO aggreated heatmap using simplifyEnrichment</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#note: the package only serves for visualizing GO database enriched results</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co">#re-read in all go results</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>dir<span class="ot">&lt;-</span><span class="fu">list.files</span>(<span class="at">path =</span> outdir, <span class="at">pattern =</span> <span class="st">'.csv'</span>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>en.results <span class="ot">=</span> <span class="fu">lapply</span>(<span class="fu">paste0</span>(outdir,dir), <span class="cf">function</span>(x){</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  tmp <span class="ot">=</span> <span class="fu">read.csv</span>(x, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>) </span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  tmp2 <span class="ot">=</span> tmp[, <span class="fu">c</span>(<span class="st">'p_value'</span>,<span class="st">'term_id'</span>,<span class="st">'term_name'</span>)] <span class="sc">%&gt;%</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(.,<span class="at">sig_level =</span> <span class="sc">-</span><span class="fu">log10</span>(p_value)) <span class="sc">%&gt;%</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">rename</span>(., <span class="at">p.adjust =</span> p_value) </span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(tmp2)</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">#upregulated gene enriched GO BP terms</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#organize in a list with required column names</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>mouse.up.go<span class="ot">&lt;-</span><span class="fu">list</span>(en.results[[<span class="dv">2</span>]], en.results[[<span class="dv">4</span>]])</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(mouse.up.go)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">'Falcao'</span>,<span class="st">'Meijer'</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>mouse.down.go<span class="ot">&lt;-</span><span class="fu">list</span>(en.results[[<span class="dv">1</span>]], en.results[[<span class="dv">3</span>]])</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(mouse.down.go)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">'Falcao'</span>,<span class="st">'Meijer'</span>)</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="co">#visualization script met error, potentially due to bug</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="co">#tried install Macports and ghostscript to handle pdf file exportation</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a><span class="co">#transfer this part to ubuntu to operate the following code </span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>plot_go_up <span class="ot">=</span> <span class="fu">simplifyGOFromMultipleLists</span>(mouse.up.go, </span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>                            <span class="at">padj_cutoff =</span> <span class="fl">0.05</span>, </span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>                            <span class="at">ont =</span> <span class="st">'BP'</span>,</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>                            <span class="at">exclude_words =</span> <span class="fu">c</span>(<span class="st">'process'</span>,<span class="st">'biological'</span>,<span class="st">'responses'</span>,<span class="st">'regulation'</span>),</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>                            <span class="at">db =</span> <span class="st">'org.Mm.eg.db'</span>,</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>                           <span class="co">#change gradient color</span></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>                           <span class="at">heatmap_param =</span> <span class="fu">list</span>(<span class="at">col =</span> <span class="fu">c</span>(<span class="st">'steelblue4'</span>, <span class="st">'white'</span>, <span class="st">'orange3'</span>),</span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>                                                <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">0.05</span>, <span class="fl">0.0005</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Use column 'term_id' as `go_id_column`.
+Use column 'p.adjust' as `padj_column`.
+1015/1015 GO IDs left for clustering.
+Cluster 1015 terms by 'binary_cut'... 41 clusters, used 1.169114 secs.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>plot_go_down <span class="ot">=</span> <span class="fu">simplifyGOFromMultipleLists</span>(mouse.down.go, </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>                            <span class="at">padj_cutoff =</span> <span class="fl">0.05</span>, </span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">ont =</span> <span class="st">'BP'</span>,</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>                            <span class="at">exclude_words =</span> <span class="fu">c</span>(<span class="st">'process'</span>,<span class="st">'biological'</span>,<span class="st">'responses'</span>,<span class="st">'regulation'</span>),</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>                            <span class="at">db =</span> <span class="st">'org.Mm.eg.db'</span>,</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>                            <span class="co">#change gradient color</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>                            <span class="at">heatmap_param =</span> <span class="fu">list</span>(<span class="at">col =</span> <span class="fu">c</span>(<span class="st">'steelblue4'</span>, <span class="st">'white'</span>, <span class="st">'orange3'</span>),</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>                            <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">0.05</span>, <span class="fl">0.0005</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Use column 'term_id' as `go_id_column`.
+Use column 'p.adjust' as `padj_column`.
+263/263 GO IDs left for clustering.
+Cluster 263 terms by 'binary_cut'... 16 clusters, used 0.03478599 secs.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-22-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="vlnplots" class="level3">
+<h3 class="anchored" data-anchor-id="vlnplots">VlnPlots</h3>
+<section id="setup" class="level4">
+<h4 class="anchored" data-anchor-id="setup">Setup</h4>
+<section id="gene-lists" class="level5">
+<h5 class="anchored" data-anchor-id="gene-lists">Gene lists</h5>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>schirmer_genes <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">mhc_i =</span> <span class="fu">c</span>(<span class="st">'B2m'</span>,<span class="st">'H2-K1'</span>,<span class="st">'H2-D1'</span>),</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">oligodendrocyte_differentiation =</span> <span class="fu">c</span>(<span class="st">'Bcas1'</span>,<span class="st">'Opalin'</span>,<span class="st">'Sgms1'</span>,<span class="st">'Sema6a'</span>),</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cell_stress =</span> <span class="fu">c</span>(<span class="st">'Atf4'</span>,<span class="st">'Faim2'</span>,<span class="st">'Junb'</span>),</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">iron_accumulation =</span> <span class="fu">c</span>(<span class="st">'Ftl1'</span>,<span class="st">'Fth1'</span>)</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(schirmer_genes) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">'MHC I'</span>,<span class="st">'Oligodendrocyte differentiation and Cell-cell interaction'</span>,<span class="st">'Cell stress'</span>,<span class="st">'Iron accumulation'</span>)  </span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(schirmer_genes) <span class="ot">=</span> purrr<span class="sc">::</span><span class="fu">imap</span>(schirmer_genes, <span class="cf">function</span>(x,y){<span class="fu">paste0</span>(<span class="fu">length</span>(x),<span class="st">'_'</span>,y)})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="plot-configuration" class="level5">
+<h5 class="anchored" data-anchor-id="plot-configuration">Plot configuration</h5>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>VlnPlotTheme <span class="ot">=</span> <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">axis.line.x =</span> <span class="fu">element_line</span>(),</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">8</span>),</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">8</span>,<span class="at">color =</span> <span class="st">'black'</span>))</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="co">#set graphical plot paramters </span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">'#D4D4D4'</span>,<span class="st">'plum2'</span>)</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="co">#colsCas = c('noEAE' = "#D4D4D4", 'EAE' = 'plum2')</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>colsDots <span class="ot">=</span> <span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'#008000'</span>)</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>jWidth <span class="ot">=</span> <span class="fl">0.3</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>dWidth <span class="ot">=</span> <span class="fl">0.6</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>pSize <span class="ot">=</span> <span class="fl">0.2</span></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>pAlpha <span class="ot">=</span> <span class="fl">0.3</span> </span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>colsCas <span class="ot">=</span> <span class="fu">c</span>(<span class="st">'noEAE'</span> <span class="ot">=</span> <span class="st">"#D4D4D4"</span>, <span class="st">'EAE'</span> <span class="ot">=</span> <span class="st">'plum2'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>falcao <span class="ot">=</span> falcao.mol</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>meijer <span class="ot">=</span> meijer.re</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="plot-genes-dysregulated-in-human-mol-schirmer-et-al" class="level4">
+<h4 class="anchored" data-anchor-id="plot-genes-dysregulated-in-human-mol-schirmer-et-al">plot genes dysregulated in human MOL (Schirmer et al)</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>genes_exp <span class="ot">=</span> <span class="fu">lapply</span>(schirmer_genes,<span class="cf">function</span>(x) <span class="fu">get_exp</span>(<span class="at">genes =</span> x))</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">=</span> purrr<span class="sc">::</span><span class="fu">imap</span>(genes_exp, <span class="cf">function</span>(x,y) {</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  name <span class="ot">=</span> <span class="fu">strsplit</span>(y,<span class="st">'_'</span>)[[<span class="dv">1</span>]][<span class="dv">2</span>]</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_exp</span>(x,name)}) </span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="co">#add legend to last plot</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>plots[[<span class="dv">4</span>]]  <span class="ot">=</span> plots[[<span class="dv">4</span>]] <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">'right'</span>,</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">legend.title =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="co">#increase widths parameter to accomodate  legend</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(plots)[<span class="dv">4</span>] <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">'3'</span>,<span class="fu">gsub</span>(<span class="st">'</span><span class="sc">\\</span><span class="st">d'</span>,<span class="st">''</span>,<span class="fu">names</span>(plots)[<span class="dv">4</span>]))</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>plots</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>$`3_MHC I`</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="480"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$`4_Oligodendrocyte differentiation and Cell-cell interaction`</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-28-2.png" class="img-fluid" width="480"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$`3_Cell stress`</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-28-3.png" class="img-fluid" width="480"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+$`3_Iron accumulation`</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-28-4.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+</section>
+<section id="plot-slc16a1-expression" class="level4">
+<h4 class="anchored" data-anchor-id="plot-slc16a1-expression">Plot Slc16a1 expression</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>genes_exp <span class="ot">=</span> <span class="fu">get_exp</span>(<span class="at">genes =</span> <span class="st">'Slc16a1'</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>plots <span class="ot">=</span> <span class="fu">plot_exp</span>(genes_exp, <span class="st">'Slc16a1'</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">legend.position =</span> <span class="st">'right'</span>,</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">legend.title =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>plots</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="EAE_OL_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="sessioninfo" class="level2">
+<h2 class="anchored" data-anchor-id="sessioninfo">sessionInfo</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.1.2 (2021-11-01)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS Monterey 12.2.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/4.1-arm64/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] grid      stats4    stats     graphics  grDevices datasets  utils    
+[8] methods   base     
+
+other attached packages:
+ [1] facefuns_0.0.0.9000         ggtext_0.1.1               
+ [3] gridtext_0.1.4              scales_1.2.0               
+ [5] circlize_0.4.15             RColorBrewer_1.1-3         
+ [7] viridis_0.6.2               viridisLite_0.4.0          
+ [9] simplifyEnrichment_1.4.0    ComplexHeatmap_2.10.0      
+[11] pheatmap_1.0.12             ggVennDiagram_1.2.1        
+[13] cowplot_1.1.1               PCAtools_2.6.0             
+[15] ggrepel_0.9.1               GEOquery_2.62.2            
+[17] curl_5.0.0                  textshape_1.7.3            
+[19] forcats_0.5.1               stringr_1.4.0              
+[21] dplyr_1.0.9                 purrr_0.3.4                
+[23] readr_2.1.2                 tidyr_1.2.0                
+[25] tibble_3.1.7                tidyverse_1.3.1            
+[27] DESeq2_1.34.0               scCustomize_0.7.0          
+[29] org.Hs.eg.db_3.14.0         org.Mm.eg.db_3.14.0        
+[31] AnnotationDbi_1.56.2        gprofiler2_0.2.1           
+[33] scater_1.22.0               scran_1.22.1               
+[35] scuttle_1.4.0               sctransform_0.3.3          
+[37] dittoSeq_1.6.0              ggplot2_3.3.6              
+[39] SingleCellExperiment_1.16.0 SummarizedExperiment_1.24.0
+[41] Biobase_2.54.0              GenomicRanges_1.46.1       
+[43] GenomeInfoDb_1.30.1         IRanges_2.28.0             
+[45] S4Vectors_0.32.4            BiocGenerics_0.40.0        
+[47] MatrixGenerics_1.6.0        matrixStats_0.62.0         
+[49] SeuratDisk_0.0.0.9020       Signac_1.7.0               
+[51] sp_1.5-0                    SeuratObject_4.1.0         
+[53] Seurat_4.1.1               
+
+loaded via a namespace (and not attached):
+  [1] rsvd_1.0.5                ica_1.0-3                
+  [3] svglite_2.1.0             RcppRoll_0.3.0           
+  [5] Rsamtools_2.10.0          foreach_1.5.2            
+  [7] lmtest_0.9-40             crayon_1.5.1             
+  [9] spatstat.core_2.4-4       MASS_7.3-57              
+ [11] nlme_3.1-158              backports_1.4.1          
+ [13] reprex_2.0.1              GOSemSim_2.22.0          
+ [15] rlang_1.0.4               XVector_0.34.0           
+ [17] ROCR_1.0-11               readxl_1.4.0             
+ [19] irlba_2.3.5               limma_3.50.3             
+ [21] BiocParallel_1.28.3       rjson_0.2.21             
+ [23] bit64_4.0.5               glue_1.6.2               
+ [25] parallel_4.1.2            vipor_0.4.5              
+ [27] spatstat.sparse_2.1-1     spatstat.geom_2.4-0      
+ [29] haven_2.5.0               tidyselect_1.1.2         
+ [31] fitdistrplus_1.1-8        XML_3.99-0.10            
+ [33] zoo_1.8-10                ggpubr_0.4.0             
+ [35] xtable_1.8-4              magrittr_2.0.3           
+ [37] evaluate_0.15             cli_3.3.0                
+ [39] zlibbioc_1.40.0           RVenn_1.1.0              
+ [41] rstudioapi_0.13           miniUI_0.1.1.1           
+ [43] rpart_4.1.16              fastmatch_1.1-3          
+ [45] shiny_1.7.1               BiocSingular_1.10.0      
+ [47] xfun_0.31                 tm_0.7-10                
+ [49] clue_0.3-61               cluster_2.1.3            
+ [51] KEGGREST_1.34.0           listenv_0.8.0            
+ [53] Biostrings_2.62.0         png_0.1-7                
+ [55] future_1.26.1             withr_2.5.0              
+ [57] bitops_1.0-7              slam_0.1-50              
+ [59] plyr_1.8.7                cellranger_1.1.0         
+ [61] dqrng_0.3.0               pillar_1.7.0             
+ [63] RcppParallel_5.1.5        GlobalOptions_0.1.2      
+ [65] cachem_1.0.6              fs_1.5.2                 
+ [67] NLP_0.2-1                 hdf5r_1.3.5              
+ [69] GetoptLong_1.0.5          paletteer_1.4.0          
+ [71] DelayedMatrixStats_1.16.0 vctrs_0.4.1              
+ [73] ellipsis_0.3.2            generics_0.1.3           
+ [75] tools_4.1.2               beeswarm_0.4.0           
+ [77] archive_1.1.5             munsell_0.5.0            
+ [79] DelayedArray_0.20.0       fastmap_1.1.0            
+ [81] compiler_4.1.2            abind_1.4-5              
+ [83] httpuv_1.6.5              plotly_4.10.0            
+ [85] rgeos_0.5-9               GenomeInfoDbData_1.2.7   
+ [87] gridExtra_2.3             edgeR_3.36.0             
+ [89] colorway_0.2.0            lattice_0.20-45          
+ [91] deldir_1.0-6              utf8_1.2.2               
+ [93] later_1.3.0               jsonlite_1.8.0           
+ [95] ScaledMatrix_1.2.0        pbapply_1.5-0            
+ [97] carData_3.0-5             sparseMatrixStats_1.6.0  
+ [99] renv_0.15.5               genefilter_1.76.0        
+[101] lazyeval_0.2.2            promises_1.2.0.1         
+[103] car_3.1-0                 doParallel_1.0.17        
+[105] goftest_1.2-3             spatstat.utils_2.3-1     
+[107] reticulate_1.25           rmarkdown_2.14           
+[109] textshaping_0.3.6         statmod_1.4.36           
+[111] Rtsne_0.16                uwot_0.1.11              
+[113] igraph_1.3.2              proxyC_0.3.3             
+[115] survival_3.3-1            yaml_2.3.5               
+[117] systemfonts_1.0.4         htmltools_0.5.2          
+[119] memoise_2.0.1             locfit_1.5-9.6           
+[121] digest_0.6.29             assertthat_0.2.1         
+[123] mime_0.12                 RSQLite_2.2.14           
+[125] future.apply_1.9.0        data.table_1.14.2        
+[127] blob_1.2.3                ragg_1.2.2               
+[129] splines_4.1.2             labeling_0.4.2           
+[131] rematch2_2.1.2            RCurl_1.98-1.8           
+[133] broom_1.0.0               hms_1.1.1                
+[135] modelr_0.1.8              colorspace_2.0-3         
+[137] BiocManager_1.30.18       ggbeeswarm_0.6.0         
+[139] shape_1.4.6               Rcpp_1.0.9               
+[141] RANN_2.6.1                fansi_1.0.3              
+[143] tzdb_0.3.0                parallelly_1.32.0        
+[145] R6_2.5.1                  ggridges_0.5.3           
+[147] lifecycle_1.0.1           bluster_1.4.0            
+[149] ggsignif_0.6.3            leiden_0.4.2             
+[151] snakecase_0.11.0          Matrix_1.4-1             
+[153] RcppAnnoy_0.0.19          iterators_1.0.14         
+[155] htmlwidgets_1.5.4         beachmat_2.10.0          
+[157] polyclip_1.10-0           rvest_1.0.2              
+[159] mgcv_1.8-40               globals_0.15.1           
+[161] patchwork_1.1.1           spatstat.random_2.2-0    
+[163] progressr_0.10.1          codetools_0.2-18         
+[165] lubridate_1.8.0           GO.db_3.14.0             
+[167] metapod_1.2.0             dbplyr_2.2.1             
+[169] RSpectra_0.16-1           gtable_0.3.0             
+[171] DBI_1.1.3                 tensor_1.5               
+[173] httr_1.4.3                KernSmooth_2.23-20       
+[175] stringi_1.7.8             vroom_1.5.7              
+[177] reshape2_1.4.4            farver_2.1.1             
+[179] annotate_1.72.0           magick_2.7.3             
+[181] xml2_1.3.3                BiocNeighbors_1.12.0     
+[183] geneplotter_1.72.0        scattermore_0.8          
+[185] bit_4.0.4                 spatstat.data_2.2-0      
+[187] janitor_2.1.0             pkgconfig_2.0.3          
+[189] ggprism_1.0.3.9000        rstatix_0.7.0            
+[191] knitr_1.39               </code></pre>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
