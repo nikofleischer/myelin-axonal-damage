@@ -3,6 +3,4 @@
 .RData
 .Ruserdata
 renv/
-*.h5seurat
-*.rds
-*.h5
+.Rproj
