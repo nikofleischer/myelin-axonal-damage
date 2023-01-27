@@ -1,21 +1,17 @@
----
-title: "Myelin insulation as a risk factor for axonal degeneration in autoimmune demyelinating disease. Analysis. Profiling of CD45+ immune cells from wt and hMBP SpC 4 days post-EAE onset by single-cell RNA sequencing "
-format: gfm
----
-# scRNAseq of CD45+ Immune cells WT vs hMBP in peak EAE 
-## Initialization
-### Environment preparation
-```{r, include=FALSE}
-#| echo: false
-#attach renv
-#library(renv)
+Myelin insulation as a risk factor for axonal degeneration in autoimmune
+demyelinating disease. Analysis. Profiling of CD45+ immune cells from wt
+and hMBP SpC 4 days post-EAE onset by single-cell RNA sequencing
+================
 
-#initiate renv
-#renv::init()
-```
+# scRNAseq of CD45+ Immune cells WT vs hMBP in peak EAE
+
+## Initialization
+
+### Environment preparation
+
 ### Document setup
 
-```{r}
+``` r
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(error = FALSE)
@@ -23,7 +19,7 @@ knitr::opts_chunk$set(error = FALSE)
 
 ### Attach required packages
 
-```{r loadPackages}
+``` r
 #general packages 
 library(tidyverse)
 library(PCAtools)
@@ -43,7 +39,8 @@ library(Polychrome)
 ```
 
 ### Define custom functions
-```{r customFunctions}
+
+``` r
 #function to provide negated set operation
 `%!in%` = Negate(`%in%`)
 
@@ -93,10 +90,10 @@ pTable = function(seurat_object,cluster_column,split_by_){
 
 }
 ```
+
 ### Define input and output directories
 
-```{r}
-#| output: false
+``` r
 wd = getwd()
 
 indir = paste0(wd,'/scRNAdata/IC/')
@@ -107,11 +104,13 @@ dir.create(outdir,recursive = TRUE)
 
 figdir = paste0(wd,'/figures/IC/')
 dir.create(figdir,recursive = TRUE)
-
 ```
-Reading in raw count matrices output by CellRanger, annotating meta data, merging both hMBP and WT counts into one object. Barcodes with less than 100 reads are discarded as empty droplets.
 
-```{r loadRawSeuratObject}
+Reading in raw count matrices output by CellRanger, annotating meta
+data, merging both hMBP and WT counts into one object. Barcodes with
+less than 100 reads are discarded as empty droplets.
+
+``` r
 #tag
 filenameWT = paste0(indir,'GSM6914114_MQ_hMBP_EAE_IC_pre_m.h5')
 filenameHMBP = paste0(indir,'GSM6914113_MQ_WT_EAE_IC_pre_m.h5')
@@ -145,7 +144,7 @@ SaveH5Seurat(sc.tagged,paste0(outdir,'IC.tagged.h5seurat'),overwrite = TRUE)
 
 # QC of raw data
 
-```{r defineCutoffs}
+``` r
 cutoff.reads = 1000
 cutoff.features = 500
 cutoff.mitoRatio = 0.05
@@ -153,17 +152,18 @@ cutoff.mitoRatio = 0.05
 
 ## Density of Counts
 
-Plotting densities of counts/cell by sample. The line represents the applied cutoff.
+Plotting densities of counts/cell by sample. The line represents the
+applied cutoff.
 
-```{r QCdensityCounts}
+``` r
 #tag
 
 qc.counts.density = sc.tagged@meta.data %>% 
   ggplot(aes(color=sample, x=nCount_RNA, fill= sample)) + 
-  	geom_density(alpha = 0.2) + 
-  	scale_x_log10() + 
-  	ylab("Cell density") +
-  	geom_vline(xintercept = cutoff.reads) + 
+    geom_density(alpha = 0.2) + 
+    scale_x_log10() + 
+    ylab("Cell density") +
+    geom_vline(xintercept = cutoff.reads) + 
     theme(legend.position = 'none')
 
 qc.counts.violin = sc.tagged@meta.data %>% 
@@ -171,10 +171,10 @@ qc.counts.violin = sc.tagged@meta.data %>%
     geom_violin(scale = 'width', alpha = 0.2) + 
     geom_jitter(size = 0.1, alpha = 0.5, color = 'black') +
     scale_fill_discrete() + 
-  	scale_y_log10() + 
+    scale_y_log10() + 
     geom_boxplot(width=0.2, outlier.size = 0, fill = 'white', color = 'black', coef = 0, outlier.color = NA) +
     geom_hline(yintercept = cutoff.reads) + 
-  	ylab('Read counts') +
+    ylab('Read counts') +
     xlab('') + 
     theme(legend.position = 'right')
 
@@ -183,19 +183,22 @@ qc.counts.density + qc.counts.violin +
     tag_levels = 'A') 
 ```
 
+![](EAE_IC_files/figure-gfm/QCdensityCounts-1.png)
+
 ## Density of Genes
 
-Plotting the density of detected genes/cell by sample. The line represents the applied cutoff.
+Plotting the density of detected genes/cell by sample. The line
+represents the applied cutoff.
 
-```{r QCdensityGenes}
+``` r
 #tag
 
 qc.features.density = sc.tagged@meta.data %>% 
   ggplot(aes(color=sample, x=nFeature_RNA, fill= sample)) + 
-  	geom_density(alpha = 0.2) + 
-  	scale_x_log10() + 
-  	ylab("Cell density") +
-  	geom_vline(xintercept = cutoff.features) + 
+    geom_density(alpha = 0.2) + 
+    scale_x_log10() + 
+    ylab("Cell density") +
+    geom_vline(xintercept = cutoff.features) + 
     theme(legend.position = 'none')
 
 qc.features.violin = sc.tagged@meta.data %>% 
@@ -203,10 +206,10 @@ qc.features.violin = sc.tagged@meta.data %>%
     geom_violin(scale = 'width', alpha = 0.2) + 
     geom_jitter(size = 0.1, alpha = 0.5, color = 'black') +
     scale_fill_discrete() + 
-  	scale_y_log10() + 
+    scale_y_log10() + 
     geom_boxplot(width=0.2, outlier.size = 0, fill = 'white', color = 'black', coef = 0, outlier.color = NA) +
     geom_hline(yintercept = cutoff.features) + 
-  	ylab('Feature counts') +
+    ylab('Feature counts') +
     xlab('') + 
     theme(legend.position = 'right')
 
@@ -215,15 +218,17 @@ qc.features.density + qc.features.violin +
     tag_levels = 'A') 
 ```
 
-```{r QCmito}
+![](EAE_IC_files/figure-gfm/QCdensityGenes-1.png)
+
+``` r
 #tag
 
 qc.mitoRatio.density = sc.tagged@meta.data %>% 
   ggplot(aes(color=sample, x=mitoRatio, fill= sample)) + 
-  	geom_density(alpha = 0.2) + 
-  	scale_x_log10() + 
-  	ylab("Cell density") +
-  	geom_vline(xintercept = cutoff.mitoRatio) + 
+    geom_density(alpha = 0.2) + 
+    scale_x_log10() + 
+    ylab("Cell density") +
+    geom_vline(xintercept = cutoff.mitoRatio) + 
     theme(legend.position = 'none')
 
 qc.mitoRatio.violin = sc.tagged@meta.data %>% 
@@ -231,10 +236,10 @@ qc.mitoRatio.violin = sc.tagged@meta.data %>%
     geom_violin(scale = 'width', alpha = 0.2) + 
     geom_jitter(size = 0.1, alpha = 0.5, color = 'black') +
     scale_fill_discrete() + 
-  	scale_y_log10() + 
+    scale_y_log10() + 
     geom_boxplot(width=0.2, outlier.size = 0, fill = 'white', color = 'black', coef = 0, outlier.color = NA) +
     geom_hline(yintercept = cutoff.mitoRatio) + 
-  	ylab('Feature counts') +
+    ylab('Feature counts') +
     xlab('') + 
     theme(legend.position = 'right')
 
@@ -243,33 +248,39 @@ qc.mitoRatio.density + qc.mitoRatio.violin +
     tag_levels = 'A') 
 ```
 
+![](EAE_IC_files/figure-gfm/QCmito-1.png)
+
 ## Summary
 
-Summary plotting read counts vs. number of genes, colored by ratio of mitochondrial genes.
+Summary plotting read counts vs. number of genes, colored by ratio of
+mitochondrial genes.
 
-```{r QCnGenesnUMIsMito}
+``` r
 #tag
 
 # Visualize the correlation between genes detected and number of UMIs and determine whether strong presence of cells with low numbers of genes/UMIs
 qc.combined = sc.tagged@meta.data %>% 
-  	ggplot(aes(x=nCount_RNA, y=nFeature_RNA)) + 
-	    geom_jitter(aes(color=mitoRatio), size = 1) + 
-  	    scale_colour_gradient(low = "gray90", high = "black", limits = c(0,cutoff.mitoRatio),na.value = 'red') +
+    ggplot(aes(x=nCount_RNA, y=nFeature_RNA)) + 
+        geom_jitter(aes(color=mitoRatio), size = 1) + 
+        scale_colour_gradient(low = "gray90", high = "black", limits = c(0,cutoff.mitoRatio),na.value = 'red') +
       stat_smooth(method=lm) +
-    	scale_x_log10() + 
-    	scale_y_log10() + 
-    	theme_classic() +
-    	geom_vline(xintercept = cutoff.reads) +
-    	geom_hline(yintercept = cutoff.features) +
+        scale_x_log10() + 
+        scale_y_log10() + 
+        theme_classic() +
+        geom_vline(xintercept = cutoff.reads) +
+        geom_hline(yintercept = cutoff.features) +
       facet_wrap(~sample)
 qc.combined + plot_annotation(tag_levels = 'A') 
 ```
 
+![](EAE_IC_files/figure-gfm/QCnGenesnUMIsMito-1.png)
+
 ## Filtering
 
-Filtering for high-quality cells is done according to cutoffs stated above.
+Filtering for high-quality cells is done according to cutoffs stated
+above.
 
-```{r filtering}
+``` r
 #tag
 
 sc.filt = sc.tagged %>% 
@@ -284,7 +295,7 @@ sc.filt = sc.tagged %>%
 
 Count data is scaled to 10.000 counts/cell and log2p normalized.
 
-```{r normalizeAndScale}
+``` r
 #tag
 
 sc.norm = sc.filt %>% 
@@ -296,56 +307,90 @@ sc.norm = sc.filt %>%
 
 2000 most variable genes are selected for downstream analysis.
 
-```{r findVariableFeatures}
+``` r
 #tag
 
 sc.norm = FindVariableFeatures(sc.norm)
 VariableFeaturePlot_scCustom(sc.norm,label = TRUE) 
 ```
 
+![](EAE_IC_files/figure-gfm/findVariableFeatures-1.png)
+
 ## PCA
 
-Data is normalized and PCA calculated for 2000 most variable genes. Elbow plot shows %-variance explained by each PC. There is no clear shoulder. 30 PCs will be used for downstream analysis.
+Data is normalized and PCA calculated for 2000 most variable genes.
+Elbow plot shows %-variance explained by each PC. There is no clear
+shoulder. 30 PCs will be used for downstream analysis.
 
-```{r}
+``` r
 #tag
 
 sc.norm = RunPCA(sc.norm)
 ElbowPlot(sc.norm,ndims = 50)
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-4-1.png)
+
 ## UMAP
 
-For visualization, UMAP is calculated using the first 30 PC's and default parameters (n.neighbors = 30, min.dist = 0.3, seed.use = 42, etc.). Plotted below colored by sample.
+For visualization, UMAP is calculated using the first 30 PC’s and
+default parameters (n.neighbors = 30, min.dist = 0.3, seed.use = 42,
+etc.). Plotted below colored by sample.
 
-```{r}
+``` r
 #tag
 
 sc.norm = sc.norm %>% RunUMAP(dims = 1:30,n.neighbors = 30,min.dist = 0.3, seed.use = 42)
 DimPlot(sc.norm,group.by = 'sample', split.by = 'sample')&NoAxes()
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-5-1.png)
+
 ## Unsupervised clustering
 
-Nearest-neighbor and shared nearest neighbor graphs are constructed using the first 30 dimensions of PCA and standard parameters (k=20, nn.method = 'annoy', annoy.metric = 'euclidean', prune.SNN = 1/15, n.trees = 50,...) Cells are clustered by modularity optimization on the Louvain algorithm (Waltman and van Eck (2013). Standard parameters are used (resolution = 0.8).
+Nearest-neighbor and shared nearest neighbor graphs are constructed
+using the first 30 dimensions of PCA and standard parameters (k=20,
+nn.method = ‘annoy’, annoy.metric = ‘euclidean’, prune.SNN = 1/15,
+n.trees = 50,…) Cells are clustered by modularity optimization on the
+Louvain algorithm (Waltman and van Eck (2013). Standard parameters are
+used (resolution = 0.8).
 
-```{r}
+``` r
 #tag
 
 sc.norm = sc.norm %>% FindNeighbors(dims = 1:30,k=20, nn.method  = 'annoy', annoy.metric = 'euclidean', prune.SNN  = 1/15, n.trees = 50)
 sc.norm = sc.norm %>% FindClusters(algorithm = 1)
+```
+
+    Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+    Number of nodes: 10710
+    Number of edges: 364263
+
+    Running Louvain algorithm...
+    Maximum modularity in 10 random starts: 0.8374
+    Number of communities: 20
+    Elapsed time: 1 seconds
+
+``` r
 DimPlot_scCustom(sc.norm)&NoAxes()
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-6-1.png)
+
 # Known markers
 
-In order to assign cell types two approaches are used jointly: (1) Plotting of canonical immune cells markers (2) Calculating marker genes of individual clusters and manual search in databases with cell type annotations (proteinatlas.org, genecards.org)
+In order to assign cell types two approaches are used jointly: (1)
+Plotting of canonical immune cells markers (2) Calculating marker genes
+of individual clusters and manual search in databases with cell type
+annotations (proteinatlas.org, genecards.org)
 
 ## CD45+ immune cells
 
-Plotting Ptprc (CD45) expression shows low background from CD45- cells. Clusters 16 and 17 look like contamination.
+Plotting Ptprc (CD45) expression shows low background from CD45- cells.
+Clusters 16 and 17 look like contamination.
 
-```{r}
+``` r
 #tag
 
 clPlot = DimPlot_scCustom(sc.norm)&NoAxes()
@@ -353,111 +398,180 @@ clPlot = DimPlot_scCustom(sc.norm)&NoAxes()
 FeaturePlot(sc.norm, features = c('Ptprc')) + clPlot + plot_layout(ncol = 2)
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-7-1.png)
+
 ## CD14+ Monocytes/Macrophages/Microglia
 
-Plotting Cd14,C1qa,Aif1 (IBA1), Trem2 shows as signal both in macrophages and microglia
+Plotting Cd14,C1qa,Aif1 (IBA1), Trem2 shows as signal both in
+macrophages and microglia
 
-```{r ,fig.asp = 1}
+``` r
 #tag
 
 wrap_plots(FeaturePlot(sc.norm, features = c('Cd14','C1qa','Aif1','Trem2'))&NoAxes())+clPlot
 ```
 
-Plotting P2ry12 and Tmem 119 as markers for Microglia. Both are fairly specific to Clusters 4,5,9. C1qa and Cx3cr also have higher expression in these clusters.
+![](EAE_IC_files/figure-gfm/unnamed-chunk-8-1.png)
 
-```{r,fig.asp = 1}
+Plotting P2ry12 and Tmem 119 as markers for Microglia. Both are fairly
+specific to Clusters 4,5,9. C1qa and Cx3cr also have higher expression
+in these clusters.
+
+``` r
 #tag
 
 wrap_plots(FeaturePlot(sc.norm, features = c('P2ry12','Tmem119','C1qa','Cx3cr1'))&NoAxes())+clPlot
 ```
 
-Plotting Fcgr1 (CD64), Ccr2, Cxcr4 as markers for macrophages. They are all strongest in Clusters 0,1,2,3,13
+![](EAE_IC_files/figure-gfm/unnamed-chunk-9-1.png)
 
-```{r}
+Plotting Fcgr1 (CD64), Ccr2, Cxcr4 as markers for macrophages. They are
+all strongest in Clusters 0,1,2,3,13
+
+``` r
 #tag
 
 #macrophages: Fcgr1: CD64, Cx3cr1
 wrap_plots(FeaturePlot(sc.norm, features = c('Fcgr1','Ccr2','Cxcr4'))&NoAxes())+clPlot
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-10-1.png)
+
 ## CD3+ T-cells
 
-Plotting Cd3g, Cd3d (CD3) and Trbc1, Trbc2 (TCR) shows that clusters 7,6,12 are T-Cells. (1) Cd4 (CD4) and Cd8a (CD8) are often not well detected in scRNAseq data but can see both populations present (2) NK cells are defined by absence of CD3 and e.g. Klrk1 (CD314), Klrb1 (CD161), Ncr1 (NKp46) we can see a population that is CD3-,CD314+,NKp46+ in one of the T-cell clusters
+Plotting Cd3g, Cd3d (CD3) and Trbc1, Trbc2 (TCR) shows that clusters
+7,6,12 are T-Cells. (1) Cd4 (CD4) and Cd8a (CD8) are often not well
+detected in scRNAseq data but can see both populations present (2) NK
+cells are defined by absence of CD3 and e.g. Klrk1 (CD314), Klrb1
+(CD161), Ncr1 (NKp46) we can see a population that is CD3-,CD314+,NKp46+
+in one of the T-cell clusters
 
-```{r,fig.asp = 1}
+``` r
 #tag
 
 #T Cells Cd3g/Cd3d: CD3
 wrap_plots(FeaturePlot(sc.norm, features = c('Cd3g','Cd3d','Trbc1', 'Trbc2'))&NoAxes())+clPlot 
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-11-1.png)
+
 ## CD19+ B-cells
 
-Plotting Cd19 (CD19), Ms4a1 (CD20), Cd79a+Cd79b (CD79) shows B-cells in Cluster 18. Looks like a very small percentage, there might be some selection bias.
+Plotting Cd19 (CD19), Ms4a1 (CD20), Cd79a+Cd79b (CD79) shows B-cells in
+Cluster 18. Looks like a very small percentage, there might be some
+selection bias.
 
-```{r,fig.asp = 1}
+``` r
 #tag
 
 wrap_plots(FeaturePlot(sc.norm, features = c('Cd19','Ms4a1','Cd79a','Cd79b'))&NoAxes())+clPlot
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-12-1.png)
+
 ## Conventional DCs
 
-Plotting Itgax (CD11c), H2-Aa, H2-ab1, H2-D1 (MHCII) as markers for conventional dendritic cells (DC). Both are not very specific, strongest in Cluster 10. Additionally, Xcr1 and Clec9a (CD370) are supposed to be markers for DC presenting to CD8+ T-cells which are also concentrated in Cluster 10.
+Plotting Itgax (CD11c), H2-Aa, H2-ab1, H2-D1 (MHCII) as markers for
+conventional dendritic cells (DC). Both are not very specific, strongest
+in Cluster 10. Additionally, Xcr1 and Clec9a (CD370) are supposed to be
+markers for DC presenting to CD8+ T-cells which are also concentrated in
+Cluster 10.
 
-```{r,fig.asp = 1}
+``` r
 #tag
 
 wrap_plots(FeaturePlot(sc.norm, features = c('Itgax','H2-Aa','Xcr1','Clec9a'))&NoAxes())+clPlot
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-13-1.png)
+
 ## Siglec-H+ plasmacytoid DCs
 
-Plotting Siglech (Siglec-H), which also marks Microglia and Bst2 (CD317) as Markers of Plasmacytoid DCs. Both are strongest in Cluster 14.
+Plotting Siglech (Siglec-H), which also marks Microglia and Bst2 (CD317)
+as Markers of Plasmacytoid DCs. Both are strongest in Cluster 14.
 
-```{r,fig.asp = 1}
+``` r
 #tag
 wrap_plots(FeaturePlot(sc.norm, features = c('Siglech','Bst2'),ncol = 1) & NoAxes()) + clPlot
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-14-1.png)
+
 ## Granulocytes
 
-Expression of Ngp (Neutrophilic granule protein), S100a8 and Retnlg identfy Cluster 15 as granulocytes --\> these are neutrophils that are important for EAE additional markers: Cxcr2: main chemokine receptor for neutrophils, Ly6g
+Expression of Ngp (Neutrophilic granule protein), S100a8 and Retnlg
+identfy Cluster 15 as granulocytes –\> these are neutrophils that are
+important for EAE additional markers: Cxcr2: main chemokine receptor for
+neutrophils, Ly6g
 
-```{r,fig.asp = 1}
+``` r
 #tag
 wrap_plots(FeaturePlot(sc.norm, features = c('S100a8','Ngp','Retnlg'))&NoAxes()&NoAxes())+clPlot
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-15-1.png)
+
 ## Identifying remaining clusters
 
-Clusters 16, 11 and 17 still remain unclear. Checking by calculating unqiue clustermarkers:
+Clusters 16, 11 and 17 still remain unclear. Checking by calculating
+unqiue clustermarkers:
 
-```{r}
+``` r
 #tag
 FindMarkers(sc.norm, group.by = 'seurat_clusters',ident.1 = 17, logfc.threshold = 2, min.diff.pct = 0.7, only.pos = TRUE)
 ```
 
+                    p_val avg_log2FC pct.1 pct.2     p_val_adj
+    Tm4sf1   0.000000e+00   2.805910 0.707 0.002  0.000000e+00
+    Id3      0.000000e+00   2.596465 0.747 0.016  0.000000e+00
+    Sparcl1  0.000000e+00   3.010900 0.813 0.003  0.000000e+00
+    Ptn      0.000000e+00   3.544829 0.787 0.008  0.000000e+00
+    Nedd4    0.000000e+00   2.546426 0.773 0.014  0.000000e+00
+    Igfbp7  5.368829e-211   4.577987 0.813 0.047 1.667183e-206
+    Tsc22d1 6.104530e-184   2.607984 0.813 0.052 1.895640e-179
+    Sparc    1.052539e-68   2.639328 0.987 0.220  3.268449e-64
+
 Cluster 17 seems to be oligendrocytes (Mag, Klk6, Ptgds)
 
-```{r}
+``` r
 #tag
 FindMarkers(sc.norm, group.by = 'seurat_clusters',ident.1 = 16, logfc.threshold = 2, min.diff.pct = 0.7, only.pos = TRUE)
+```
+
+                  p_val avg_log2FC pct.1 pct.2   p_val_adj
+    S100a9 0.000000e+00   8.055196 0.901 0.013 0.00000e+00
+    S100a8 9.247286e-81   7.028866 0.938 0.228 2.87156e-76
+
+``` r
 sc.norm %>% FeaturePlot('Cldn5')
 ```
 
-Tm4sf1 points to endothelial cells for cluster 16, which can be confirmed by looking at Cldn5
+![](EAE_IC_files/figure-gfm/unnamed-chunk-17-1.png)
 
-One cluster remains unannotated. By calculating marker genes we find Fscn1 and Ccr7 among the top markers which are annotated in literature as highly specific markers for activation of dendritic cells.
+Tm4sf1 points to endothelial cells for cluster 16, which can be
+confirmed by looking at Cldn5
 
-```{r}
+One cluster remains unannotated. By calculating marker genes we find
+Fscn1 and Ccr7 among the top markers which are annotated in literature
+as highly specific markers for activation of dendritic cells.
+
+``` r
 #tag
 sc.norm %>% FindMarkers(ident.1 = '11',logfc.threshold = 0.5, only.pos = TRUE,min.diff.pct = 0.7)
 ```
 
+                      p_val avg_log2FC pct.1 pct.2     p_val_adj
+    Fscn1      0.000000e+00   4.467155 0.905 0.058  0.000000e+00
+    Ramp3      0.000000e+00   2.848859 0.709 0.008  0.000000e+00
+    Ccr7       0.000000e+00   4.102384 0.921 0.007  0.000000e+00
+    Serpinb6b  0.000000e+00   3.729916 0.852 0.034  0.000000e+00
+    Traf1     1.047943e-240   2.608671 0.820 0.100 3.254177e-236
+    Cytip     6.252751e-192   2.987493 0.931 0.183 1.941667e-187
+    Tmem123   4.074869e-170   3.310465 0.942 0.241 1.265369e-165
+
 ## Assigning preliminary cell type labels.
 
-```{r}
+``` r
 #tag
 #assigning original cell type labels based on old seurat clusters
 sc.norm$clusters = sc.norm$seurat_clusters
@@ -487,11 +601,14 @@ sc.norm$celltypes = Idents(sc.norm)
 
 ## Cell cycle
 
-Cell cycle phase scoring (using an enrichment approach adapted from Tirosh et al. 2016) shows actively dividing cells only in Cluster 8 which is recapitulated by expression of canonical markers for proliferating cells Top2a and Mki67.This cluster shows markers for both T-cells and microglia so we have to regress out cell cycle phase to put each cell type in their corresponding clusters.
+Cell cycle phase scoring (using an enrichment approach adapted from
+Tirosh et al. 2016) shows actively dividing cells only in Cluster 8
+which is recapitulated by expression of canonical markers for
+proliferating cells Top2a and Mki67.This cluster shows markers for both
+T-cells and microglia so we have to regress out cell cycle phase to put
+each cell type in their corresponding clusters.
 
-```{r scoreCellCylcle}
-#| eval: false
-
+``` r
 cell_cycle_genes = read.csv('Mus_musculus_CC.csv')
 
 # Download the appropriate Ensembldb database
@@ -518,8 +635,7 @@ sc.norm = CellCycleScoring(sc.norm,
 wrap_plots(DimPlot(sc.norm,group.by= "Phase", split.by = 'Phase',ncol = 1)&NoAxes()) + wrap_plots( FeaturePlot(sc.norm,features = c('Top2a','Mki67'), ncol = 1)&NoAxes()) 
 ```
 
-```{r regressOutCC}
-#| eval: false
+``` r
 scCC <- ScaleData(sc.norm, vars.to.regress = c("S.Score", "G2M.Score"), features = rownames(sc.norm))
 
 scCC = scCC %>% 
@@ -528,25 +644,31 @@ scCC = scCC %>%
 SaveH5Seurat(scCC,paste0(outdir,'scCC.h5seurat',overwrite = TRUE))
 ```
 
-```{r}
-#| include: false
-scCC = LoadH5Seurat(paste0(outdir,'scCC.h5seurat'))
-```
-
 Now cycling cells are closer to the microglia and t-cell clusters
 
-```{r,fig.asp = 0.5,fig.width = 20}
+``` r
 #tag
 #Here we can see that 'cycling cells' cluster is now split mostly between Microglia and T-Cells 
 scCC %>% DimPlot_scCustom(label=TRUE,group.by = 'celltypes') + 
 scCC %>% FeaturePlot(c('Top2a','Mki67'))
 ```
 
-  ## Doublet & contamination removal
+![](EAE_IC_files/figure-gfm/unnamed-chunk-21-1.png)
 
-In order to improve the clustering we will also remove doublet cells using scDoubletFinder and filter out any clusters that are not immune cells. As scDoubletFinder relies on randomization, the clustering results downstream of that will not be 100% reproducible via this notebook. Total number of clusters and assignment of cells to (unsupervised) clusters will vary slightly. Therefore we provide the code we used and will then load a list containing the filtered cell barcodes as they were output when we ran the function at the end of the snippet in order to generate exactly the same figures as presented in the paper.
+\## Doublet & contamination removal
 
-```{r}
+In order to improve the clustering we will also remove doublet cells
+using scDoubletFinder and filter out any clusters that are not immune
+cells. As scDoubletFinder relies on randomization, the clustering
+results downstream of that will not be 100% reproducible via this
+notebook. Total number of clusters and assignment of cells to
+(unsupervised) clusters will vary slightly. Therefore we provide the
+code we used and will then load a list containing the filtered cell
+barcodes as they were output when we ran the function at the end of the
+snippet in order to generate exactly the same figures as presented in
+the paper.
+
+``` r
 #tag
 
 sce = as.SingleCellExperiment(scCC)
@@ -558,12 +680,18 @@ sce.dbl = scDblFinder(sce)
  plotUMAP(sce.dbl,colour_by = 'nFeature_RNA')) 
 ```
 
-```{r}
+![](EAE_IC_files/figure-gfm/unnamed-chunk-22-1.png)
+
+``` r
 #tag
 
 #scdblfinder also predicts which cells are singlets absolutly 
 plotUMAP(sce.dbl,colour_by = 'scDblFinder.class')
+```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-23-1.png)
+
+``` r
 #and we can use this information to subset the seurat object 
 sce.noDbl = sce.dbl[,sce.dbl$scDblFinder.class == 'singlet']
 scCC.noDbl = scCC[,sce.dbl$scDblFinder.class == 'singlet']
@@ -578,7 +706,17 @@ scCC.noDblRE = scCC.noDbl %>%
                 BuildClusterTree()
 ```
 
-```{r,fig.asp = 0.5,fig.width = 20}
+    Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+    Number of nodes: 9095
+    Number of edges: 309425
+
+    Running Louvain algorithm...
+    Maximum modularity in 10 random starts: 0.7922
+    Number of communities: 21
+    Elapsed time: 1 seconds
+
+``` r
 #tag
 
 scCC.noDblRE.clean  = scCC.noDblRE[,scCC.noDblRE$seurat_clusters %!in% c(19,20)]
@@ -593,14 +731,36 @@ scCC.noDblRE.clean = scCC.noDblRE.clean %>%
                       FindNeighbors(dims =  1:30) %>% 
                       FindClusters(resolution = 0.8) %>% 
                       BuildClusterTree() 
+```
 
+    Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+    Number of nodes: 8954
+    Number of edges: 307147
+
+    Running Louvain algorithm...
+    Maximum modularity in 10 random starts: 0.8154
+    Number of communities: 16
+    Elapsed time: 1 seconds
+
+``` r
 scCC.noDblRE.clean %>% subset(celltypes %!in% levels(scCC.noDblRE.clean$celltypes)[9])
+```
+
+    An object of class Seurat 
+    31053 features across 8953 samples within 1 assay 
+    Active assay: RNA (31053 features, 2000 variable features)
+     2 dimensional reductions calculated: pca, umap
+
+``` r
 scCC.noDblRE.clean %>% DimPlot_scCustom(label = TRUE) + scCC.noDblRE.clean %>% DimPlot_scCustom(group.by = 'celltypes', label = TRUE)
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-24-1.png)
+
 Now we assign final cell type labels.
 
-```{r}
+``` r
 #tag
 
 scCC.noDblRE.clean$clusters = scCC.noDblRE.clean$seurat_clusters
@@ -633,14 +793,16 @@ scCC.noDblRE.clean$celltypesNew = Idents(scCC.noDblRE.clean)
 scCC.noDblRE.clean %>% DimPlot_scCustom(group.by = 'celltypesNew',label = TRUE) 
 ```
 
-```{r}
+![](EAE_IC_files/figure-gfm/unnamed-chunk-25-1.png)
+
+``` r
 #tag
 SaveH5Seurat(scCC.noDblRE.clean, file = paste0(outdir,'/MQ_EAE_processed.h5seurat'),overwrite = TRUE)
 ```
 
 # Subclustering analysis
 
-```{r subsetData}
+``` r
   sc.IC = LoadH5Seurat(file = paste0(indir,'GSE222063_MQ_EAE_processed.h5seurat'))
   sc.mg = sc.IC %>% subset(celltypesNew == 'Microglia')
   sc.mac = sc.IC %>% subset(celltypesNew == 'Macrophages')
@@ -650,7 +812,7 @@ SaveH5Seurat(scCC.noDblRE.clean, file = paste0(outdir,'/MQ_EAE_processed.h5seura
 
 ### Integration & reanalysis of Macrophages
 
-```{r}
+``` r
 sc.split = SplitObject(sc.mac,split.by = 'sample')
 
 # normalize and identify variable features for each dataset independently
@@ -677,9 +839,19 @@ mac.combined = mac.combined %>%       ScaleData() %>%
                                       FindClusters(resolution = 0.5)
 ```
 
+    Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+    Number of nodes: 6102
+    Number of edges: 202931
+
+    Running Louvain algorithm...
+    Maximum modularity in 10 random starts: 0.7706
+    Number of communities: 6
+    Elapsed time: 0 seconds
+
 ### Identify contaminating cell types
 
-```{r,fig.width = 15,fig.asp = 1}
+``` r
 genes_celltypes = list(
   genes_b = c('Cd19','Ms4a1'),
   genes_gran = c('S100a8','Retnlg'),
@@ -699,21 +871,36 @@ mac.combined %>% DimPlot_scCustom(label = TRUE) / wrap_plots(
   })) 
 ```
 
-Based on marker genes for the individual cell types identified in our dataset no single cluster seems to contain a contamination.
+![](EAE_IC_files/figure-gfm/unnamed-chunk-28-1.png)
+
+Based on marker genes for the individual cell types identified in our
+dataset no single cluster seems to contain a contamination.
 
 ### Identification of specific macrophage cell states
 
-Cell states were analyzed based on discussion and marker gene expression reported in Giladi et al. 2021. Here they state, that Ly6c+ monocytes (human: CD14hi-CD16lo) carry chemokine receptors that allow tissue infiltration and subsequent generation of different monocyte-derived cells. After infiltration they gain expression of MHCII-related genes. Monocytes expressing Ccr2 were identified as main drivers of EAE pathogenesis.
+Cell states were analyzed based on discussion and marker gene expression
+reported in Giladi et al. 2021. Here they state, that Ly6c+ monocytes
+(human: CD14hi-CD16lo) carry chemokine receptors that allow tissue
+infiltration and subsequent generation of different monocyte-derived
+cells. After infiltration they gain expression of MHCII-related genes.
+Monocytes expressing Ccr2 were identified as main drivers of EAE
+pathogenesis.
 
-In their single-cell analysis they could identify a more fine-grained classification of different cell states:
+In their single-cell analysis they could identify a more fine-grained
+classification of different cell states:
 
--   One cluster showed expression of interferon responsive genes and labeled Ifi2+
--   Two subsets expressed Arg1, Apoc2 and C1qb and were designated as Arg1+ I and
--   A cluster was characterized by expression of Nos2, Gpnmb, Arg1 and Fabp5 and designated Nos2+
--   One population that expressed inflammatory genes such as Saa3, Plac8 and Gbp2 was called Saa3+
--   A cluster expressing Cxcl9, Cxcl10 and Il1b was designated as Cxcl10+
+-   One cluster showed expression of interferon responsive genes and
+    labeled Ifi2+
+-   Two subsets expressed Arg1, Apoc2 and C1qb and were designated as
+    Arg1+ I and
+-   A cluster was characterized by expression of Nos2, Gpnmb, Arg1 and
+    Fabp5 and designated Nos2+
+-   One population that expressed inflammatory genes such as Saa3, Plac8
+    and Gbp2 was called Saa3+
+-   A cluster expressing Cxcl9, Cxcl10 and Il1b was designated as
+    Cxcl10+
 
-```{r macStateMarkers}
+``` r
 genes_mac = list(
   genes_general = c('Ly6c2', 'Ccr2','H2-Ab1','H2-D1','H2-Eb1','Top2a','Mki67'),
   genes_arg1 = c('Arg1','Ecm1','Tmem37','Apoc2','C1qb','Itgb5','Itga6','Anxa3','Ptgs1','C3ar1'),
@@ -738,10 +925,9 @@ mac_states_plots = lapply(genes_mac,function(x){
                               legend.title = element_text(size = 4)))})
 ```
 
-::: panel-tabset
-```{r plotMacStateMarkers,fig.width = 15}
-#| results: asis
+<div class="panel-tabset">
 
+``` r
 iwalk(mac_states_plots, ~ {
   cat('#### ', .y, '\n\n')
   
@@ -751,13 +937,75 @@ iwalk(mac_states_plots, ~ {
   
 })
 ```
-:::
 
-While there is no perfect match of the markers, we can still see a good correspondance our subclustering and the respective substate markers described by Giladi et al. It seems not to be possible to retrieve the the two individual Arg1 populations. \n according to these markers, our clusters correspond to: - 0: Arg1+ - 1: Arg1+ - 2: Nos2+ - 3: Cxcl10+ - 4: Saa3+ (by the markers other than Saa3) - 5: Ifi2+
+#### genes_general
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMacStateMarkers-1.png)
+
+</div>
+
+#### genes_arg1
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMacStateMarkers-2.png)
+
+</div>
+
+#### genes_arg2
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMacStateMarkers-3.png)
+
+</div>
+
+#### genes_nos2
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMacStateMarkers-4.png)
+
+</div>
+
+#### genes_ifit1
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMacStateMarkers-5.png)
+
+</div>
+
+#### genes_saa3
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMacStateMarkers-6.png)
+
+</div>
+
+#### genes_cxcl10
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMacStateMarkers-7.png)
+
+</div>
+
+</div>
+
+While there is no perfect match of the markers, we can still see a good
+correspondance our subclustering and the respective substate markers
+described by Giladi et al. It seems not to be possible to retrieve the
+the two individual Arg1 populations. according to these markers, our
+clusters correspond to: - 0: Arg1+ - 1: Arg1+ - 2: Nos2+ - 3: Cxcl10+ -
+4: Saa3+ (by the markers other than Saa3) - 5: Ifi2+
 
 ### rename subtypes
 
-```{r}
+``` r
 mac.combined$clusters = mac.combined$seurat_clusters
 Idents(mac.combined) = mac.combined$clusters
 mac.combined = RenameIdents(mac.combined,
@@ -775,7 +1023,7 @@ SaveH5Seurat(mac.combined,filename = paste0(outdir,'mac.combined.h5seurat'),over
 
 ### Integration of Microglia
 
-```{r}
+``` r
 sc.split = SplitObject(sc.mg,split.by = 'sample')
 
 # normalize and identify variable features for each dataset independently
@@ -799,9 +1047,19 @@ mg.combined = mg.combined %>%         ScaleData() %>%
                                       FindClusters(resolution = 0.5)
 ```
 
+    Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+    Number of nodes: 1446
+    Number of edges: 55041
+
+    Running Louvain algorithm...
+    Maximum modularity in 10 random starts: 0.7837
+    Number of communities: 7
+    Elapsed time: 0 seconds
+
 ### check for contamination in Microglia sample
 
-```{r,fig.width = 15,fig.asp = 1}
+``` r
 mg.combined %>% DimPlot_scCustom(label = TRUE) / wrap_plots(
   lapply(genes_celltypes,function(x){
     FeaturePlot_scCustom(seurat_object = mg.combined,
@@ -813,7 +1071,9 @@ mg.combined %>% DimPlot_scCustom(label = TRUE) / wrap_plots(
   })) 
 ```
 
-```{r,fig.width = 15,fig.asp = 1}
+![](EAE_IC_files/figure-gfm/unnamed-chunk-31-1.png)
+
+``` r
 markers_mg = c('Bhlhe41','Gpr34', 'Hexb', 'Olfml3', 'P2ry12','P2ry13','Sall1','Serpine2','Siglech','Sparc')
 mg.combined %>% DimPlot_scCustom(label = TRUE) / wrap_plots(
   lapply(markers_mg,function(x){
@@ -826,11 +1086,15 @@ mg.combined %>% DimPlot_scCustom(label = TRUE) / wrap_plots(
   })) 
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-32-1.png)
+
 ### clean contamiting cells
 
-Cluster 6 seems to be a contamination as there are several markers from other celltypes expressed Cluster 5 seems to be a contamination as well as expression of sevarl Microglia markers is missing
+Cluster 6 seems to be a contamination as there are several markers from
+other celltypes expressed Cluster 5 seems to be a contamination as well
+as expression of sevarl Microglia markers is missing
 
-```{r}
+``` r
 mg.combined = mg.combined %>%     subset(seurat_clusters %!in% c(5,6)) %>% 
                                   ScaleData() %>%
                                   RunPCA(npcs = 30) %>% 
@@ -839,11 +1103,36 @@ mg.combined = mg.combined %>%     subset(seurat_clusters %!in% c(5,6)) %>%
                                   FindClusters(resolution = 0.5)
 ```
 
+    Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+    Number of nodes: 1382
+    Number of edges: 54150
+
+    Running Louvain algorithm...
+    Maximum modularity in 10 random starts: 0.7769
+    Number of communities: 5
+    Elapsed time: 0 seconds
+
 ### Identification of specific Microglia cell states
 
-The following analysis of microglia subclusters is based on the findings by Jordao et al. 2019. - In their analysis all MG populations expressed Bhlhe41, Gpr34, Hexb, Olfml3, P2ry12, P2ry13, Sall1, Serpine2, Siglech, and Sparc. - But daMG clusters showed lower expression of P2ry12, Maf,Slc2a5 and higher expression of Ccl2, Cxcl10, Ly86,and Mki67,indicating a proliferative capacity of daMG alongside the production of chemokines. - From the paper by Jordao et al.:\n The most inflammatory disease-associated microglial subsets (daMG2, daMG3, and daMG4) strongly downregulated the core microglial genes P2ry12, Tmem119,and Selplg and up-regulated Ly86. Both P2RY12 and TMEM119 immunoreactivities were clearly down-regulated within the core of spinal cord lesions, whereas CD162 (encoded by Selplg) was only weakly reduced. By contrast, microglial MD-1 (encoded by Ly86) was strongly up-regulated in the lesions. Because of their transcriptional profile and their P2RY12loTMEM119loMD-1hi phenotype, we determined that only daMG2, daMG3, and daMG4 localized within the lesion sites.
+The following analysis of microglia subclusters is based on the findings
+by Jordao et al. 2019. - In their analysis all MG populations expressed
+Bhlhe41, Gpr34, Hexb, Olfml3, P2ry12, P2ry13, Sall1, Serpine2, Siglech,
+and Sparc. - But daMG clusters showed lower expression of P2ry12,
+Maf,Slc2a5 and higher expression of Ccl2, Cxcl10, Ly86,and
+Mki67,indicating a proliferative capacity of daMG alongside the
+production of chemokines. - From the paper by Jordao et al.:The most
+inflammatory disease-associated microglial subsets (daMG2, daMG3, and
+daMG4) strongly downregulated the core microglial genes P2ry12,
+Tmem119,and Selplg and up-regulated Ly86. Both P2RY12 and TMEM119
+immunoreactivities were clearly down-regulated within the core of spinal
+cord lesions, whereas CD162 (encoded by Selplg) was only weakly reduced.
+By contrast, microglial MD-1 (encoded by Ly86) was strongly up-regulated
+in the lesions. Because of their transcriptional profile and their
+P2RY12loTMEM119loMD-1hi phenotype, we determined that only daMG2, daMG3,
+and daMG4 localized within the lesion sites.
 
-```{r mgStateGenes}
+``` r
 genes_mg = list(
   genes_mg = c('Bhlhe41','Gpr34', 'Hexb', 'Olfml3', 'P2ry12','P2ry13','Sall1','Serpine2','Siglech','Sparc'),
   genes_daMG_Up = c('Ccl2', 'Cxcl10','Ly86','Mki67'),
@@ -856,7 +1145,7 @@ genes_mg = list(
   genes_daMG4 = c('Itm2b','Ctss','Ccl5','Naaa','Ly86'))
 ```
 
-```{r mgStates}
+``` r
 mg_states_plots = lapply(genes_mg,function(x){
                       wrap_plots(design = 'ABBB
                                            #BBB',
@@ -872,10 +1161,9 @@ mg_states_plots = lapply(genes_mg,function(x){
                               legend.title = element_text(size = 4)))})
 ```
 
-::: panel-tabset
-```{r plotMgStateMarkers,fig.width = 15}
-#| results: asis
+<div class="panel-tabset">
 
+``` r
 iwalk(mg_states_plots, ~ {
   cat('#### ', .y, '\n\n')
   
@@ -885,21 +1173,99 @@ iwalk(mg_states_plots, ~ {
   
 })
 ```
-:::
+
+#### genes_mg
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMgStateMarkers-1.png)
+
+</div>
+
+#### genes_daMG_Up
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMgStateMarkers-2.png)
+
+</div>
+
+#### genes_daMG_Down
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMgStateMarkers-3.png)
+
+</div>
+
+#### genes_hMG
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMgStateMarkers-4.png)
+
+</div>
+
+#### genes_repMG
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMgStateMarkers-5.png)
+
+</div>
+
+#### genes_daMG1
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMgStateMarkers-6.png)
+
+</div>
+
+#### genes_daMG2
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMgStateMarkers-7.png)
+
+</div>
+
+#### genes_daMG3
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMgStateMarkers-8.png)
+
+</div>
+
+#### genes_daMG4
+
+<div class="cell-output-display">
+
+![](EAE_IC_files/figure-gfm/plotMgStateMarkers-9.png)
+
+</div>
+
+</div>
 
 -   All cells express most of the the micglia markers
 -   Clusters 1,2,4 express more daMG associated genes
--   Cluster 0 containss hMG (has stronger expression in all genes downregulated in daMG and less expression in genes upregulated in daMG)
+-   Cluster 0 containss hMG (has stronger expression in all genes
+    downregulated in daMG and less expression in genes upregulated in
+    daMG)
 -   Cluster 3 contains Microglia with an active cell cylce
--   Genes that mark daMG1 don't show variation across our data set so daMG1 population is probably not captured
+-   Genes that mark daMG1 don’t show variation across our data set so
+    daMG1 population is probably not captured
 -   Cluster 2 is most similar to daMG2
--   Cluster 1 seems to be an intermediate between hMG and daMG2, but also has some dMG3 genes expressed
+-   Cluster 1 seems to be an intermediate between hMG and daMG2, but
+    also has some dMG3 genes expressed
 -   Cluster 4 is most similar to daMG3
--   the daMG4 signature doesn't show as a clear subpopulation, might be not well captured here
+-   the daMG4 signature doesn’t show as a clear subpopulation, might be
+    not well captured here
 
 ### assign mg type names
 
-```{r}
+``` r
 mg.combined$clusters = mg.combined$seurat_clusters
 Idents(mg.combined) = mg.combined$clusters
 mg.combined = RenameIdents(mg.combined,
@@ -918,17 +1284,9 @@ The following blocks generate the figures as found in the paper.
 
 ## Load datasets
 
-```{r}
-#| include: false
-sc.IC = LoadH5Seurat(paste0(indir,'GSE222063_MQ_EAE_processed.h5seurat'))
-mg.combined = LoadH5Seurat(paste0(outdir,'mg.combined.h5seurat'))
-mac.combined = LoadH5Seurat(paste0(outdir,'mac.combined.h5seurat'))
-sc.tagged = LoadH5Seurat(paste0(outdir,'IC.tagged.h5Seurat'))
-```
-
 ## Initialize figures
 
-```{r}
+``` r
 #set graphical plot paramters 
 cols = c('#D4D4D4','#CCF9E8')
 colsDots = c('black','#008000')
@@ -946,7 +1304,7 @@ theme_umap = theme(axis.line = element_blank(),
 
 ## Overview
 
-```{r fig.width = 5,fig.height = 4}
+``` r
 sc.IC$sample = factor(sc.IC$sample, levels = c('EAE_IC_WT','EAE_IC_HMBP'))
 sc.IC$celltypesNew = sc.IC$celltypesNew %>% recode(Monocytes = 'Activated DC')
 
@@ -979,12 +1337,13 @@ umap = umapCelltypes + inset_element(umapSamples,top = 1,
 
 ggsave(paste0(figdir,'umap.svg'),plot = umap,dpi = 600,width = 9.22,height = 8.2,units = 'cm')
 umap
-
 ```
+
+![](EAE_IC_files/figure-gfm/unnamed-chunk-37-1.png)
 
 ## Gene expression plots
 
-```{r}
+``` r
 VlnPlotTheme = theme(panel.background = element_blank(),
                      axis.line.x = element_line(),
                      text=element_text(size=8),
@@ -1010,7 +1369,7 @@ macGenes = c(macHomGenes,macActGenes)
 
 ### Microglia
 
-```{r}
+``` r
 #Microglia 
 dfMgWt = FetchData(sc.mg,vars = mgActMarker, slot = 'data',cells = colnames(sc.mg)[sc.mg$sample =='EAE_IC_WT']) %>% gather() %>% mutate(genotype = 'WT')
 dfMgHmbp = FetchData(sc.mg,vars = mgActMarker, slot = 'data',cells = colnames(sc.mg)[sc.mg$sample =='EAE_IC_HMBP']) %>% gather() %>% mutate(genotype = 'hMBP')
@@ -1037,12 +1396,11 @@ mgPlot = ggplot(dfMg, aes(x = factor(key,level = mgActMarker),
                 xlab('Microglia activation genes') + 
                 ylab('Log1p-normalized expression') + 
                 VlnPlotTheme
-
 ```
 
 ### T-cells
 
-```{r}
+``` r
 #T-Cells
 dfTWt = FetchData(sc.t,vars = tActMarker, slot = 'data',cells = colnames(sc.t)[sc.t$sample =='EAE_IC_WT']) %>% gather() %>% mutate(genotype = 'WT')
 dfTHmbp = FetchData(sc.t,vars = tActMarker, slot = 'data',cells = colnames(sc.t)[sc.t$sample =='EAE_IC_HMBP']) %>% gather() %>% mutate(genotype = 'hMBP')
@@ -1068,12 +1426,11 @@ tPlot = ggplot(dfT, aes(x = factor(key,level = tActMarker), y = value,fill = fac
                     legend.position = 'none') + 
               xlab('T-Cell activation genes') + 
               VlnPlotTheme
-
 ```
 
 ### Cytokines
 
-```{r}
+``` r
 dfCkWt = FetchData(sc.IC,vars = cytokines, slot = 'data',cells = colnames(sc.IC)[sc.IC$sample =='EAE_IC_WT']) %>% gather() %>% mutate(genotype = 'WT')
 dfCkHmbp = FetchData(sc.IC,vars = cytokines, slot = 'data',cells = colnames(sc.IC)[sc.IC$sample =='EAE_IC_HMBP']) %>% gather() %>% mutate(genotype = 'hMBP')
 dfCk = rbind(dfCkWt,dfCkHmbp)
@@ -1101,12 +1458,11 @@ ckPlot = ggplot(dfCk, aes(x = factor(key,level = cytokines),
                 xlab('Cytokines') + 
                 ylab('Log1p-normalized expression') +  #as ln(counts/counts per cell * 10e4 +1
                 VlnPlotTheme
-
 ```
 
 ### Macrophages
 
-```{r}
+``` r
 dfMacWt = FetchData(sc.mac,vars = macGenes, slot = 'data',cells = colnames(sc.mac)[sc.mac$sample =='EAE_IC_WT']) %>% gather() %>% mutate(genotype = 'WT')
 dfMacHmbp = FetchData(sc.mac,vars = macGenes, slot = 'data',cells = colnames(sc.mac)[sc.mac$sample =='EAE_IC_HMBP']) %>% gather() %>% mutate(genotype = 'hMBP')
 dfMac = rbind(dfMacWt,dfMacHmbp)
@@ -1132,27 +1488,30 @@ macPlot = ggplot(dfMac, aes(x = factor(key,level = macGenes),
                 xlab('Macrophage activation genes') + 
                 ylab('Log1p-normalized expression') +  #as ln(counts/counts per cell * 10e4 +1
                 VlnPlotTheme
-
 ```
 
 ### Output Fig. X
 
-```{r,fig.width = 5,fig.height = 2}
+``` r
 mgPlot %>% ggsave(paste0(figdir,'mg.svg'), plot = ., dpi = 600, width = 10, height = 4, units = 'cm')
 mgPlot
 ```
 
-```{r fig.width = 9,fig.height = 2}
+![](EAE_IC_files/figure-gfm/unnamed-chunk-43-1.png)
+
+``` r
 (macPlot + tPlot + ckPlot) %>% ggsave(paste0(figdir,'t_mac_ck.svg'),plot = .,dpi = 600,width = 18,height = 4,units = 'cm')
 
 (macPlot + tPlot + ckPlot)
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-44-1.png)
+
 # Extended Figures
 
 ## QC
 
-```{r fig.width=4, fig.height=12}
+``` r
 themeVln = theme_classic() + 
            theme(
                   legend.position = 'none',
@@ -1172,7 +1531,7 @@ qc.counts.violin = sc.tagged@meta.data %>%
     geom_boxplot(width = bpWidth, outlier.size = 0, coef = 0, outlier.color = NA,lwd = lwd) +
     scale_y_log10() + 
     geom_hline(yintercept = cutoff.reads, linetype=linetype) + 
-  	ylab('Read Counts') +
+    ylab('Read Counts') +
     xlab('') + 
     themeVln
     
@@ -1185,7 +1544,7 @@ qc.features.violin = sc.tagged@meta.data %>%
     geom_boxplot(width = bpWidth, outlier.size = 0, coef = 0, outlier.color = NA,lwd = lwd) +
     scale_y_log10() + 
     geom_hline(yintercept = cutoff.features, linetype = linetype) + 
-  	ylab('Feature Counts') +
+    ylab('Feature Counts') +
     xlab('') + 
     themeVln
 
@@ -1198,20 +1557,26 @@ qc.mitoRatio.violin = sc.tagged@meta.data %>%
     geom_boxplot(width = bpWidth, outlier.size = 0, coef = 0, outlier.color = NA,lwd = lwd) +
     scale_y_log10() + 
     geom_hline(yintercept = cutoff.mitoRatio, linetype=linetype) + 
-  	ylab('Mitochondrial Read Ratio') +
+    ylab('Mitochondrial Read Ratio') +
     xlab('') + 
     themeVln
 
     qcplot = qc.counts.violin / qc.features.violin / qc.mitoRatio.violin
 qcplot
+```
+
+![](EAE_IC_files/figure-gfm/unnamed-chunk-45-1.png)
+
+``` r
 ggsave(paste0(figdir,'qc_plots.svg'),qcplot,dpi = 600,width = 4,height = 12,units = 'cm')
 ```
 
 ## PCA
 
-Plotting the biplots for first 10 PCs in pairs. No obvious separation is visible based on sample identity.
+Plotting the biplots for first 10 PCs in pairs. No obvious separation is
+visible based on sample identity.
 
-```{r fig.asp=1}
+``` r
 #with PCAtools to do some deeper analyses 
 set.seed(42)
 VarFeatNorm = sc.IC@assays$RNA@scale.data[VariableFeatures(sc.IC),]
@@ -1227,7 +1592,7 @@ metaData = sc.IC@meta.data[x,]
 p = PCAtools::pca(VarFeatNorm,rank = 10,metadata = metaData)
 ```
 
-```{r PCA, fig.width = 9, fig.asp =1}
+``` r
 colr = c('grey','darkgreen')
 cols = c('#D4D4D4','#CCF9E8')
 
@@ -1244,13 +1609,17 @@ pcaPlot = pairsplot(p,
                     colkey = colr) & 
         theme(plot.title = element_text(size = 8))
 pcaPlot
+```
 
+![](EAE_IC_files/figure-gfm/PCA-1.png)
+
+``` r
 ggsave(paste0(figdir,'pca_pairsplot.svg'),pcaPlot,dpi = 600,width = 27,height = 27,units = 'cm')
 ```
 
 ## CellTypeMarkers
 
-```{r,fig.width = 5,fig.height = 7}
+``` r
 CellTypeMarkers = c(
                     'Cd19','Ms4a1',
                     'S100a8','Retnlg',
@@ -1277,10 +1646,15 @@ celltypeDot = DotPlot_scCustom(sc.IC,features = CellTypeMarkers,
                       axis.text = element_text(size = 8),
                       plot.margin = margin(0,0,40,0))
 celltypeDot
+```
+
+![](EAE_IC_files/figure-gfm/unnamed-chunk-47-1.png)
+
+``` r
 ggsave(paste0(figdir,'celltypes_dotplot.svg'),celltypeDot,dpi = 600,width = 11,height = 12.9,units = 'cm')
 ```
 
-```{r cellTypeFeature,fig.width = 7,fig.height=12.9}
+``` r
 celltypeFeature = FeaturePlot(sc.IC,
                               rev(CellTypeMarkers),ncol = 2,
                               pt.size = 0.1) & 
@@ -1291,15 +1665,19 @@ celltypeFeature = FeaturePlot(sc.IC,
                           legend.text = element_text(size = 4),
                           plot.title = element_text(size = 8))
 celltypeFeature
-ggsave(paste0(figdir,'celltypes_feature.svg'),celltypeFeature,dpi = 600,width = 7,height = 12.9,units = 'cm')
+```
 
+![](EAE_IC_files/figure-gfm/cellTypeFeature-1.png)
+
+``` r
+ggsave(paste0(figdir,'celltypes_feature.svg'),celltypeFeature,dpi = 600,width = 7,height = 12.9,units = 'cm')
 ```
 
 ## Subcluster analysis
 
 ### Macrophages Fig X.
 
-```{r,fig.width=20, fig.height=10}
+``` r
 genes_mac = list(
   genes_general = c('Ly6c2', 'Ccr2', 'Top2a'),
   genes_arg1 = c('Arg1','Ecm1','C1qb'),
@@ -1387,9 +1765,11 @@ ggsave(paste0(figdir,'fig_mac_sub.svg'),plot = fig_mac_sub,dpi = 600,width = 50,
 fig_mac_sub
 ```
 
+![](EAE_IC_files/figure-gfm/unnamed-chunk-48-1.png)
+
 ### Microglia Fig X.
 
-```{r,fig.width=20, fig.height=10}
+``` r
 genes_MG = list(
   genes_hMG = c('Gpr34','Siglech','P2ry12','Tmem119'),
   genes_daMG2 = c('Ctsb','Apoe','B2m','Cst7','Cd74','Ly86'),
@@ -1481,6 +1861,6 @@ ggsave(paste0(figdir,'fig_mg_sub.svg'),plot = fig_mg_sub,dpi = 600,width = 50,he
 ggsave(paste0(figdir,'fig_mg_sub.svg'),plot = fig_mg_sub,dpi = 600,width = 50,height = 25,units = 'cm')
 
 fig_mg_sub
-          
-     
 ```
+
+![](EAE_IC_files/figure-gfm/unnamed-chunk-49-1.png)
