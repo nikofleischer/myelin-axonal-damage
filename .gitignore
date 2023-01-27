@@ -4,3 +4,6 @@
 .Ruserdata
 renv/
 .Rproj
+Output/
+figures/
+scRNAdata/
